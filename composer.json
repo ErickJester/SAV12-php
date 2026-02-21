@@ -1,0 +1,14 @@
+{
+    "name": "sav12/ticket-system",
+    "description": "SAV12 - Sistema de Tickets con SLA para Hostinger",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "autoload": {
+        "classmap": [
+            "app/"
+        ]
+    }
+}
