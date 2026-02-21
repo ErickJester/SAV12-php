@@ -1,7 +1,6 @@
 Options -Indexes
 
 RewriteEngine On
-RewriteBase /
 
 # Bloquear acceso a archivos sensibles
 <FilesMatch "(?i)^(\.env|composer\.(json|lock)|\.git|phpunit\.xml|\.htaccess)$">

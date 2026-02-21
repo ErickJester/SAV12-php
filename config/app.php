@@ -107,7 +107,7 @@ define('UPLOAD_PATH', PUBLIC_PATH . '/' . trim((string) config('runtime.uploads_
 define('LOG_PATH', BASE_PATH . '/' . trim((string) config('runtime.log_dir', 'logs'), '/'));
 
 // Hardening de secreto en producción
-$unsafeSecrets = ['', 'default_secret_change_me', 'changeme', 'secret', 'default'];
+$unsafeSecrets = ['', 'default_secret_change_me', 'changeme', 'secret', 'default', 'reemplazar_con_secreto_aleatorio_largo'];
 if (APP_ENV === 'production' && in_array(strtolower(trim(APP_SECRET)), $unsafeSecrets, true)) {
     error_log('[BOOTSTRAP] APP_SECRET inseguro o vacío en producción.');
     http_response_code(500);
