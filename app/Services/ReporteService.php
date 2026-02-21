@@ -270,6 +270,8 @@ class ReporteService {
                 'ubicacionId' => !empty($t['ubicacion_id']) ? (int) $t['ubicacion_id'] : null,
                 'ubicacionNombre' => $t['ubicacion_nombre'] ?? null,
                 'fechaCreacion' => $t['fecha_creacion'] ?? null,
+                'fechaPrimeraRespuesta' => $t['fecha_primera_respuesta'] ?? null,
+                'tienePrimeraRespuesta' => !empty($t['fecha_primera_respuesta']),
                 'fechaActualizacion' => $t['fecha_actualizacion'] ?? null,
                 'fechaResolucion' => $t['fecha_resolucion'] ?? null,
                 'diasAbierto' => $analisis['diasAbierto'],
@@ -300,7 +302,9 @@ class ReporteService {
 
         $sinPrimeraRespuesta = array_values(array_filter(
             $itemsScoring,
-            fn($x) => empty($x['fechaResolucion']) && $x['horasEspera'] > 0
+            fn($x) => empty($x['fechaResolucion'])
+                && empty($x['fechaPrimeraRespuesta'])
+                && ($x['horasEspera'] > 0)
         ));
         usort($sinPrimeraRespuesta, fn($a, $b) => $b['horasEspera'] <=> $a['horasEspera']);
         $sinPrimeraRespuesta = array_slice($sinPrimeraRespuesta, 0, max(1, $limite));
@@ -434,7 +438,9 @@ class ReporteService {
                 || $ticketsVencidos > 0
                 || $ticketsCriticosPendientes > 0
                 || count($reabiertosMucho) > 0
-                || count($tecnicosSobrecargadosItems) > 0,
+                || count($tecnicosSobrecargadosItems) > 0
+                || count($sinAsignarAntiguos) > 0
+                || count($enEsperaProlongada) > 0,
 
             // Detalles extendidos (sin romper escalares)
             'ticketsReabiertosMuchasVecesDetalle' => [

@@ -158,10 +158,47 @@ class ExportService {
         $periodo = $payload['periodo'] ?? [];
         $html = '<h1>SAV12 - Reporte</h1>';
         $html .= '<p>Generado: ' . htmlspecialchars((string) ($periodo['generadoEn'] ?? date('Y-m-d H:i:s'))) . '</p>';
+        $html .= '<p>Desde: ' . htmlspecialchars((string) ($periodo['desde'] ?? '')) . ' | Hasta: ' . htmlspecialchars((string) ($periodo['hasta'] ?? '')) . '</p>';
 
         $html .= '<h2>KPIs</h2><ul>';
         foreach ((array) ($payload['kpis'] ?? []) as $k => $v) {
             $html .= '<li><strong>' . htmlspecialchars(self::normalizeKey((string) $k)) . ':</strong> ' . htmlspecialchars((string) $v) . '</li>';
+        }
+        $html .= '</ul>';
+
+        $html .= '<h2>Reporte SLA</h2><ul>';
+        foreach ((array) ($payload['reporteSLA'] ?? []) as $k => $v) {
+            $html .= '<li><strong>' . htmlspecialchars(self::normalizeKey((string) $k)) . ':</strong> ' . htmlspecialchars((string) $v) . '</li>';
+        }
+        $html .= '</ul>';
+
+        $html .= '<h2>Análisis de tiempos</h2><ul>';
+        foreach ((array) ($payload['analisisTiempos'] ?? []) as $k => $v) {
+            $html .= '<li><strong>' . htmlspecialchars(self::normalizeKey((string) $k)) . ':</strong> ' . htmlspecialchars((string) $v) . '</li>';
+        }
+        $html .= '</ul>';
+
+        $html .= '<h2>Desempeño técnicos</h2><table border="1" cellspacing="0" cellpadding="4"><tr><th>Técnico</th><th>Asignados</th><th>Pendientes</th><th>Tasa resolución</th></tr>';
+        foreach ((array) ($payload['desempenoTecnicos'] ?? []) as $row) {
+            $html .= '<tr><td>' . htmlspecialchars((string) ($row['tecnico'] ?? $row['tecnicoNombre'] ?? '')) . '</td><td>' . htmlspecialchars((string) ($row['asignados'] ?? $row['ticketsActivos'] ?? '')) . '</td><td>' . htmlspecialchars((string) ($row['pendientes'] ?? '')) . '</td><td>' . htmlspecialchars((string) ($row['tasaResolucion'] ?? '')) . '</td></tr>';
+        }
+        $html .= '</table>';
+
+        $html .= '<h2>Análisis por prioridad</h2><table border="1" cellspacing="0" cellpadding="4"><tr><th>Prioridad</th><th>Total</th><th>Pendientes</th></tr>';
+        foreach ((array) ($payload['analisisPorPrioridad'] ?? []) as $row) {
+            $html .= '<tr><td>' . htmlspecialchars((string) ($row['prioridad'] ?? '')) . '</td><td>' . htmlspecialchars((string) ($row['total'] ?? '')) . '</td><td>' . htmlspecialchars((string) ($row['pendientes'] ?? '')) . '</td></tr>';
+        }
+        $html .= '</table>';
+
+        $html .= '<h2>Análisis por ubicaciones</h2><table border="1" cellspacing="0" cellpadding="4"><tr><th>Ubicación</th><th>Total</th><th>Pendientes</th></tr>';
+        foreach ((array) ($payload['analisisPorUbicaciones'] ?? []) as $row) {
+            $html .= '<tr><td>' . htmlspecialchars((string) ($row['ubicacion'] ?? '')) . '</td><td>' . htmlspecialchars((string) ($row['total'] ?? '')) . '</td><td>' . htmlspecialchars((string) ($row['pendientes'] ?? '')) . '</td></tr>';
+        }
+        $html .= '</table>';
+
+        $html .= '<h2>Top categorías</h2><ul>';
+        foreach ((array) ($payload['topCategorias'] ?? []) as $row) {
+            $html .= '<li>' . htmlspecialchars((string) ($row['nombre'] ?? '')) . ': ' . htmlspecialchars((string) ($row['total'] ?? '')) . '</li>';
         }
         $html .= '</ul>';
 
@@ -178,6 +215,15 @@ class ExportService {
             $html .= '<tr><td>' . htmlspecialchars((string) ($item['ticketId'] ?? '')) . '</td><td>' . htmlspecialchars((string) ($item['titulo'] ?? '')) . '</td><td>' . htmlspecialchars((string) ($item['estado'] ?? '')) . '</td><td>' . htmlspecialchars((string) ($item['scoreProblema'] ?? '')) . '</td></tr>';
         }
         $html .= '</table>';
+
+        $tp = (array) ($payload['ticketsProblematicos'] ?? []);
+        foreach (['masReabiertos', 'mayorTiempoSinResolver', 'sinPrimeraRespuesta', 'criticosSinResolver'] as $sec) {
+            $html .= '<h3>' . htmlspecialchars($sec) . '</h3><ul>';
+            foreach (array_slice((array) ($tp[$sec] ?? []), 0, 10) as $item) {
+                $html .= '<li>#' . htmlspecialchars((string) ($item['ticketId'] ?? '')) . ' - ' . htmlspecialchars((string) ($item['titulo'] ?? '')) . ' (' . htmlspecialchars((string) ($item['estado'] ?? '')) . ')</li>';
+            }
+            $html .= '</ul>';
+        }
 
         return $html;
     }
@@ -198,6 +244,42 @@ class ExportService {
         }
 
         $lines[] = '';
+        $lines[] = 'Reporte SLA:';
+        foreach ((array) ($payload['reporteSLA'] ?? []) as $k => $v) {
+            $lines[] = '- ' . self::normalizeKey((string) $k) . ': ' . (string) $v;
+        }
+
+        $lines[] = '';
+        $lines[] = 'Análisis de tiempos:';
+        foreach ((array) ($payload['analisisTiempos'] ?? []) as $k => $v) {
+            $lines[] = '- ' . self::normalizeKey((string) $k) . ': ' . (string) $v;
+        }
+
+        $lines[] = '';
+        $lines[] = 'Desempeño técnicos (resumen):';
+        foreach (array_slice((array) ($payload['desempenoTecnicos'] ?? []), 0, 10) as $r) {
+            $lines[] = '- ' . (string) ($r['tecnico'] ?? $r['tecnicoNombre'] ?? 'N/A') . ': activos/asignados=' . (string) ($r['ticketsActivos'] ?? $r['asignados'] ?? 0);
+        }
+
+        $lines[] = '';
+        $lines[] = 'Análisis por prioridad:';
+        foreach ((array) ($payload['analisisPorPrioridad'] ?? []) as $r) {
+            $lines[] = '- ' . (string) ($r['prioridad'] ?? '') . ': total=' . (string) ($r['total'] ?? 0) . ', pendientes=' . (string) ($r['pendientes'] ?? 0);
+        }
+
+        $lines[] = '';
+        $lines[] = 'Análisis por ubicaciones (top):';
+        foreach (array_slice((array) ($payload['analisisPorUbicaciones'] ?? []), 0, 10) as $r) {
+            $lines[] = '- ' . (string) ($r['ubicacion'] ?? '') . ': total=' . (string) ($r['total'] ?? 0);
+        }
+
+        $lines[] = '';
+        $lines[] = 'Top categorías:';
+        foreach ((array) ($payload['topCategorias'] ?? []) as $r) {
+            $lines[] = '- ' . (string) ($r['nombre'] ?? '') . ': ' . (string) ($r['total'] ?? 0);
+        }
+
+        $lines[] = '';
         $lines[] = 'Alertas:';
         foreach ((array) ($payload['alertas'] ?? []) as $k => $v) {
             if (is_scalar($v) || $v === null) {
@@ -215,6 +297,15 @@ class ExportService {
                 (string) ($item['estado'] ?? ''),
                 (string) ($item['scoreProblema'] ?? 0)
             );
+        }
+
+        $tp = (array) ($payload['ticketsProblematicos'] ?? []);
+        foreach (['masReabiertos', 'mayorTiempoSinResolver', 'sinPrimeraRespuesta', 'criticosSinResolver'] as $sec) {
+            $lines[] = '';
+            $lines[] = 'Tickets problemáticos - ' . $sec . ':';
+            foreach (array_slice((array) ($tp[$sec] ?? []), 0, 10) as $item) {
+                $lines[] = '#'. (string) ($item['ticketId'] ?? '') . ' | ' . self::shorten((string) ($item['titulo'] ?? ''), 70) . ' | ' . (string) ($item['estado'] ?? '');
+            }
         }
 
         return $lines;
