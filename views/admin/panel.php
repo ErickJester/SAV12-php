@@ -23,8 +23,8 @@
     </div>
 </div>
 <div class="row mt-3">
-    <div class="col-md-4"><a href="/admin/tickets" class="btn btn-outline-primary w-100 p-3"><i class="bi bi-ticket-perforated"></i> Ver Tickets</a></div>
-    <div class="col-md-4"><a href="/admin/reportes" class="btn btn-outline-success w-100 p-3"><i class="bi bi-bar-chart"></i> Reportes</a></div>
-    <div class="col-md-4"><a href="/admin/usuarios" class="btn btn-outline-warning w-100 p-3"><i class="bi bi-people"></i> Usuarios</a></div>
+    <div class="col-md-4"><a href="<?= base_url('admin/tickets') ?>" class="btn btn-outline-primary w-100 p-3"><i class="bi bi-ticket-perforated"></i> Ver Tickets</a></div>
+    <div class="col-md-4"><a href="<?= base_url('admin/reportes') ?>" class="btn btn-outline-success w-100 p-3"><i class="bi bi-bar-chart"></i> Reportes</a></div>
+    <div class="col-md-4"><a href="<?= base_url('admin/usuarios') ?>" class="btn btn-outline-warning w-100 p-3"><i class="bi bi-people"></i> Usuarios</a></div>
 </div>
 <?php $content = ob_get_clean(); include VIEW_PATH . '/layouts/main.php'; ?>

@@ -39,7 +39,7 @@
                 <div class="alert alert-info"><i class="bi bi-info-circle"></i> Sesión cerrada correctamente.</div>
             <?php endif; ?>
 
-            <form action="/login" method="POST">
+            <form action="<?= base_url('login') ?>" method="POST">
                 <?= Session::csrfField() ?>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Correo electrónico</label>
@@ -53,7 +53,7 @@
             </form>
             <div class="text-center mt-4">
                 <span class="text-muted">¿No tienes cuenta?</span>
-                <a href="/registro" class="fw-bold text-decoration-none" style="color:#2563eb">Regístrate aquí</a>
+                <a href="<?= base_url('registro') ?>" class="fw-bold text-decoration-none" style="color:#2563eb">Regístrate aquí</a>
             </div>
         </div>
     </div>

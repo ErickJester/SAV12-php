@@ -9,7 +9,7 @@
         <td><span class="badge-estado badge-<?= $t['prioridad'] ?>"><?= $t['prioridad'] ?></span></td>
         <td><?= htmlspecialchars($t['creador_nombre'] ?? '-') ?></td>
         <td><?= date('d/m/Y H:i', strtotime($t['fecha_creacion'])) ?></td>
-        <td><a href="/tecnico/ticket/<?= $t['id'] ?>" class="btn btn-sm btn-outline-primary">Ver</a></td></tr>
+        <td><a href="<?= base_url('tecnico/ticket/' . $t['id']) ?>" class="btn btn-sm btn-outline-primary">Ver</a></td></tr>
     <?php endforeach; ?>
     </tbody></table></div></div>
 <?php $content = ob_get_clean(); include VIEW_PATH . '/layouts/main.php'; ?>

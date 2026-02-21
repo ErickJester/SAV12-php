@@ -25,7 +25,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4>Mis Tickets Recientes</h4>
-    <a href="/usuario/crear-ticket" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nuevo Ticket</a>
+    <a href="<?= base_url('usuario/crear-ticket') ?>" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nuevo Ticket</a>
 </div>
 
 <div class="card">
@@ -43,7 +43,7 @@
                     <td><span class="badge-estado badge-<?= $t['prioridad'] ?>"><?= $t['prioridad'] ?></span></td>
                     <td><?= date('d/m/Y H:i', strtotime($t['fecha_creacion'])) ?></td>
                     <td><?= htmlspecialchars($t['asignado_nombre'] ?? 'Sin asignar') ?></td>
-                    <td><a href="/usuario/ticket/<?= $t['id'] ?>" class="btn btn-sm btn-outline-primary">Ver</a></td>
+                    <td><a href="<?= base_url('usuario/ticket/' . $t['id']) ?>" class="btn btn-sm btn-outline-primary">Ver</a></td>
                 </tr>
                 <?php endforeach; ?>
                 <?php if (empty($tickets)): ?>

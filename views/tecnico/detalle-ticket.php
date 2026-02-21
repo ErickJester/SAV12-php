@@ -1,7 +1,7 @@
 <?php $pageTitle = 'Ticket #' . $ticket['id'] . ' - SAV12'; ob_start(); ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-ticket-detailed"></i> Ticket #<?= $ticket['id'] ?></h2>
-    <a href="/tecnico/panel" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+    <a href="<?= base_url('tecnico/panel') ?>" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
 <div class="row">
     <div class="col-md-8">
@@ -12,15 +12,15 @@
                 <span class="badge-estado badge-<?= $ticket['prioridad'] ?>"><?= $ticket['prioridad'] ?></span>
             </div>
             <p><?= nl2br(htmlspecialchars($ticket['descripcion'])) ?></p>
-            <?php if (!empty($ticket['evidencia_problema'])): ?><img src="/uploads/<?= $ticket['evidencia_problema'] ?>" class="img-fluid" style="max-height:300px;border-radius:8px"><?php endif; ?>
-            <?php if (!empty($ticket['evidencia_resolucion'])): ?><div class="mt-2"><strong>Evidencia resolución:</strong><br><img src="/uploads/<?= $ticket['evidencia_resolucion'] ?>" class="img-fluid" style="max-height:300px;border-radius:8px"></div><?php endif; ?>
+            <?php if (!empty($ticket['evidencia_problema'])): ?><img src="<?= base_url('uploads/' . $ticket['evidencia_problema']) ?>" class="img-fluid" style="max-height:300px;border-radius:8px"><?php endif; ?>
+            <?php if (!empty($ticket['evidencia_resolucion'])): ?><div class="mt-2"><strong>Evidencia resolución:</strong><br><img src="<?= base_url('uploads/' . $ticket['evidencia_resolucion']) ?>" class="img-fluid" style="max-height:300px;border-radius:8px"></div><?php endif; ?>
         </div>
 
         <!-- Cambiar Estado -->
         <?php if (!in_array($ticket['estado'], ['CERRADO', 'CANCELADO'])): ?>
         <div class="card p-4 mb-4" style="border-radius:16px;border:none;box-shadow:0 4px 15px rgba(0,0,0,0.05)">
             <h5><i class="bi bi-arrow-repeat"></i> Cambiar Estado</h5>
-            <form action="/tecnico/ticket/<?= $ticket['id'] ?>/cambiar-estado" method="POST" enctype="multipart/form-data">
+            <form action="<?= base_url('tecnico/ticket/' . $ticket['id'] . '/cambiar-estado') ?>" method="POST" enctype="multipart/form-data">
                 <?= Session::csrfField() ?>
                 <div class="row">
                     <div class="col-md-6 mb-2">
@@ -45,7 +45,7 @@
 
         <!-- Asignarme -->
         <?php if (empty($ticket['asignado_a_id'])): ?>
-        <form action="/tecnico/ticket/<?= $ticket['id'] ?>/asignar" method="POST" class="mb-4">
+        <form action="<?= base_url('tecnico/ticket/' . $ticket['id'] . '/asignar') ?>" method="POST" class="mb-4">
             <?= Session::csrfField() ?>
             <button type="submit" class="btn btn-success w-100"><i class="bi bi-person-plus"></i> Asignarme este Ticket</button>
         </form>
@@ -60,7 +60,7 @@
                     <p class="mb-0 mt-1"><?= nl2br(htmlspecialchars($c['contenido'])) ?></p>
                 </div>
             <?php endforeach; ?>
-            <form action="/tecnico/ticket/<?= $ticket['id'] ?>/comentar" method="POST" class="mt-3">
+            <form action="<?= base_url('tecnico/ticket/' . $ticket['id'] . '/comentar') ?>" method="POST" class="mt-3">
                 <?= Session::csrfField() ?>
                 <textarea name="contenido" class="form-control mb-2" rows="3" placeholder="Escribir comentario..." required></textarea>
                 <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-send"></i> Enviar</button>

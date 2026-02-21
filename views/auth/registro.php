@@ -28,7 +28,7 @@
                 <div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> <?= htmlspecialchars($mensaje) ?></div>
             <?php endif; ?>
 
-            <form action="/registro" method="POST">
+            <form action="<?= base_url('registro') ?>" method="POST">
                 <?= Session::csrfField() ?>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Nombre completo</label>
@@ -66,7 +66,7 @@
                 <button type="submit" class="btn btn-registro"><i class="bi bi-person-plus"></i> Crear Cuenta</button>
             </form>
             <div class="text-center mt-3">
-                <a href="/login" class="text-decoration-none" style="color:#2563eb">Ya tengo cuenta → Iniciar Sesión</a>
+                <a href="<?= base_url('login') ?>" class="text-decoration-none" style="color:#2563eb">Ya tengo cuenta → Iniciar Sesión</a>
             </div>
         </div>
     </div>
