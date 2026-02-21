@@ -74,8 +74,6 @@ class EmailService {
         }
     }
 
-    // === Métodos públicos (equivalentes al Java) ===
-
     public static function enviarBienvenida(array $usuario): void {
         self::send(
             $usuario['correo'],
@@ -112,18 +110,48 @@ class EmailService {
     }
 
     public static function notificarTecnicoAsignado(array $ticket): void {
-        if (empty($ticket['asignado_correo'] ?? ($ticket['asignado_a_id'] ? null : null))) {
-            if (!empty($ticket['asignado_a_id'])) {
-                require_once APP_PATH . '/Models/Usuario.php';
-                $tecnico = Usuario::findById($ticket['asignado_a_id']);
-                if ($tecnico && !empty($tecnico['correo'])) {
-                    self::send(
-                        $tecnico['correo'],
-                        'Se te ha asignado un ticket: ' . ($ticket['titulo'] ?? ''),
-                        "Hola {$tecnico['nombre']},\n\nSe te ha asignado el ticket:\nTítulo: {$ticket['titulo']}\nDescripción: {$ticket['descripcion']}\n\nPor favor revisa el sistema."
-                    );
-                }
+        $destino = null;
+        $nombreTecnico = 'Técnico';
+
+        // 1) Enviar directo si asignado_correo viene en payload
+        if (!empty($ticket['asignado_correo']) && filter_var((string) $ticket['asignado_correo'], FILTER_VALIDATE_EMAIL)) {
+            $destino = (string) $ticket['asignado_correo'];
+            $nombreTecnico = (string) ($ticket['asignado_nombre'] ?? $nombreTecnico);
+        }
+
+        // 2) Si no viene correo, buscar por asignado_a_id
+        if ($destino === null && !empty($ticket['asignado_a_id'])) {
+            require_once APP_PATH . '/Models/Usuario.php';
+            $tecnico = Usuario::findById((int) $ticket['asignado_a_id']);
+            if ($tecnico && !empty($tecnico['correo']) && filter_var((string) $tecnico['correo'], FILTER_VALIDATE_EMAIL)) {
+                $destino = (string) $tecnico['correo'];
+                $nombreTecnico = (string) ($tecnico['nombre'] ?? $nombreTecnico);
             }
         }
+
+        // 3) Si no hay destinatario resoluble, log y salir
+        if ($destino === null) {
+            error_log('[EmailService] notificarTecnicoAsignado sin destinatario válido.');
+            return;
+        }
+
+        self::send(
+            $destino,
+            'Se te ha asignado un ticket: ' . ($ticket['titulo'] ?? ''),
+            "Hola {$nombreTecnico},\n\nSe te ha asignado el ticket:\nTítulo: {$ticket['titulo']}\nDescripción: {$ticket['descripcion']}\n\nPor favor revisa el sistema."
+        );
+    }
+
+    // Alias opcionales de paridad semántica
+    public static function sendTestEmail(string $to, string $subject = 'SAV12 Test Email', string $body = 'Correo de prueba SAV12'): bool {
+        return self::send($to, $subject, $body);
+    }
+
+    public static function sendLoginConfirmation(array $usuario): bool {
+        return self::send(
+            (string) ($usuario['correo'] ?? ''),
+            'Confirmación de inicio de sesión',
+            "Hola " . ($usuario['nombre'] ?? 'usuario') . ",\n\nSe detectó un inicio de sesión en tu cuenta SAV12."
+        );
     }
 }

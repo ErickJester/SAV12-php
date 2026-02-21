@@ -13,9 +13,6 @@ class ReporteService {
     private const ALERTA_SIN_ASIGNAR_HORAS = 24;
     private const ALERTA_ESPERA_HORAS = 48;
 
-    // ========================
-    // REPORTE SLA
-    // ========================
     public static function reporteSLA(string $desde, string $hasta): array {
         $tickets = Ticket::getByPeriodo($desde, $hasta);
         return self::construirReporteSla($tickets);
@@ -28,7 +25,7 @@ class ReporteService {
         $cumpleResol = $incumpleResol = 0;
 
         foreach ($tickets as $t) {
-            if (in_array($t['estado'], ['RESUELTO', 'CERRADO']) && !empty($t['fecha_resolucion'])) {
+            if (in_array($t['estado'], ['RESUELTO', 'CERRADO'], true) && !empty($t['fecha_resolucion'])) {
                 $total++;
                 $r = self::evaluarSla($t);
                 if ($r['cumplePrimera']) $cumplePrimera++; else $incumplePrimera++;
@@ -39,41 +36,41 @@ class ReporteService {
 
         return [
             'totalTickets' => $total,
-            'ticketsCumplenSLA' => $cumpleGlobal, 'ticketsIncumplenSLA' => $incumpleGlobal,
-            'ticketsCumplenPrimeraRespuesta' => $cumplePrimera, 'ticketsIncumplenPrimeraRespuesta' => $incumplePrimera,
-            'ticketsCumplenResolucion' => $cumpleResol, 'ticketsIncumplenResolucion' => $incumpleResol,
+            'ticketsCumplenSLA' => $cumpleGlobal,
+            'ticketsIncumplenSLA' => $incumpleGlobal,
+            'ticketsCumplenPrimeraRespuesta' => $cumplePrimera,
+            'ticketsIncumplenPrimeraRespuesta' => $incumplePrimera,
+            'ticketsCumplenResolucion' => $cumpleResol,
+            'ticketsIncumplenResolucion' => $incumpleResol,
             'slaPrimeraRespuestaPorcentaje' => self::pct($cumplePrimera, $total),
             'slaResolucionPorcentaje' => self::pct($cumpleResol, $total),
             'slaPorcentaje' => self::pct($cumpleGlobal, $total),
         ];
     }
 
-    // ========================
-    // KPIs EJECUTIVOS
-    // ========================
     public static function kpisEjecutivos(string $desde, string $hasta): array {
         $tickets = Ticket::getByPeriodo($desde, $hasta);
         $total = count($tickets);
 
-        $resueltos = count(array_filter($tickets, fn($t) => in_array($t['estado'], ['RESUELTO', 'CERRADO'])));
-        $pendientes = count(array_filter($tickets, fn($t) => in_array($t['estado'], ['ABIERTO', 'REABIERTO', 'EN_PROCESO', 'EN_ESPERA'])));
-        $sinAsignar = count(array_filter($tickets, fn($t) => empty($t['asignado_a_id']) && !in_array($t['estado'], ['CERRADO', 'CANCELADO'])));
-        $criticos = count(array_filter($tickets, fn($t) => in_array(($t['prioridad'] ?? ''), ['ALTA', 'URGENTE'], true) && !in_array($t['estado'], ['RESUELTO', 'CERRADO'])));
+        $resueltos = count(array_filter($tickets, fn($t) => in_array($t['estado'], ['RESUELTO', 'CERRADO'], true)));
+        $pendientes = count(array_filter($tickets, fn($t) => in_array($t['estado'], ['ABIERTO', 'REABIERTO', 'EN_PROCESO', 'EN_ESPERA'], true)));
+        $sinAsignar = count(array_filter($tickets, fn($t) => empty($t['asignado_a_id']) && !in_array($t['estado'], ['CERRADO', 'CANCELADO'], true)));
+        $criticos = count(array_filter($tickets, fn($t) => in_array(($t['prioridad'] ?? ''), ['ALTA', 'URGENTE'], true) && !in_array($t['estado'], ['RESUELTO', 'CERRADO'], true)));
 
         $tasaResolucion = $total > 0 ? round($resueltos * 100.0 / $total, 2) : 0;
         $slaData = self::construirReporteSla($tickets);
 
         return [
-            'totalTickets' => $total, 'ticketsResueltos' => $resueltos,
-            'ticketsPendientes' => $pendientes, 'ticketsSinAsignar' => $sinAsignar,
-            'ticketsCriticos' => $criticos, 'tasaResolucion' => $tasaResolucion,
+            'totalTickets' => $total,
+            'ticketsResueltos' => $resueltos,
+            'ticketsPendientes' => $pendientes,
+            'ticketsSinAsignar' => $sinAsignar,
+            'ticketsCriticos' => $criticos,
+            'tasaResolucion' => $tasaResolucion,
             'slaGlobalPorcentaje' => $slaData['slaPorcentaje'],
         ];
     }
 
-    // ========================
-    // REPORTE POR ESTADO
-    // ========================
     public static function reportePorEstado(string $desde, string $hasta): array {
         $tickets = Ticket::getByPeriodo($desde, $hasta);
         $estados = ['ABIERTO' => 0, 'REABIERTO' => 0, 'EN_PROCESO' => 0, 'EN_ESPERA' => 0, 'RESUELTO' => 0, 'CERRADO' => 0, 'CANCELADO' => 0];
@@ -83,9 +80,6 @@ class ReporteService {
         return $estados;
     }
 
-    // ========================
-    // REPORTE GENERAL
-    // ========================
     public static function reporteGeneral(string $desde, string $hasta): array {
         $tickets = Ticket::getByPeriodo($desde, $hasta);
         $conteo = fn($estado) => count(array_filter($tickets, fn($t) => $t['estado'] === $estado));
@@ -99,18 +93,18 @@ class ReporteService {
 
         return [
             'totalTickets' => count($tickets),
-            'ticketsAbiertos' => $abiertos, 'ticketsReabiertos' => $reabiertos,
-            'ticketsEnProceso' => $enProceso, 'ticketsEnEspera' => $enEspera,
-            'ticketsResueltos' => $resueltos, 'ticketsCerrados' => $cerrados,
+            'ticketsAbiertos' => $abiertos,
+            'ticketsReabiertos' => $reabiertos,
+            'ticketsEnProceso' => $enProceso,
+            'ticketsEnEspera' => $enEspera,
+            'ticketsResueltos' => $resueltos,
+            'ticketsCerrados' => $cerrados,
             'ticketsCancelados' => $conteo('CANCELADO'),
             'ticketsResueltosTotal' => $resueltos + $cerrados,
             'ticketsNoResueltos' => $abiertos + $reabiertos + $enProceso + $enEspera,
         ];
     }
 
-    // ========================
-    // ANÁLISIS DE TIEMPOS
-    // ========================
     public static function analisisTiempos(string $desde, string $hasta): array {
         $tickets = array_filter(
             Ticket::getByPeriodo($desde, $hasta),
@@ -118,7 +112,12 @@ class ReporteService {
         );
 
         if (empty($tickets)) {
-            return ['tiempoPromedioRespuestaMin' => 0, 'tiempoPromedioResolucionMin' => 0, 'tiempoPromedioEsperaMin' => 0, 'ticketsAnalizados' => 0];
+            return [
+                'tiempoPromedioRespuestaMin' => 0,
+                'tiempoPromedioResolucionMin' => 0,
+                'tiempoPromedioEsperaMin' => 0,
+                'ticketsAnalizados' => 0,
+            ];
         }
 
         $respuestas = array_filter(array_column($tickets, 'tiempo_primera_respuesta_seg'), fn($v) => $v !== null);
@@ -143,9 +142,6 @@ class ReporteService {
         ];
     }
 
-    // ========================
-    // DESEMPEÑO TÉCNICOS
-    // ========================
     public static function desempenoTecnicos(string $desde, string $hasta): array {
         $tickets = Ticket::getByPeriodo($desde, $hasta);
         $porTecnico = [];
@@ -153,7 +149,7 @@ class ReporteService {
         foreach ($tickets as $t) {
             $tecnicoId = $t['asignado_a_id'] ?? null;
             $tecnico = $t['asignado_nombre'] ?? 'Sin asignar';
-            $clave = $tecnicoId ? "id:$tecnicoId" : "sin_asignar";
+            $clave = $tecnicoId ? "id:$tecnicoId" : 'sin_asignar';
             if (!isset($porTecnico[$clave])) {
                 $porTecnico[$clave] = [
                     'tecnicoId' => $tecnicoId,
@@ -190,9 +186,6 @@ class ReporteService {
         return $result;
     }
 
-    // ========================
-    // ANÁLISIS POR PRIORIDAD
-    // ========================
     public static function analisisPorPrioridad(string $desde, string $hasta): array {
         $tickets = Ticket::getByPeriodo($desde, $hasta);
         $porPrioridad = [];
@@ -218,9 +211,6 @@ class ReporteService {
         return $result;
     }
 
-    // ========================
-    // ANÁLISIS POR UBICACIONES
-    // ========================
     public static function analisisPorUbicaciones(string $desde, string $hasta): array {
         $tickets = Ticket::getByPeriodo($desde, $hasta);
         $porUbicacion = [];
@@ -241,31 +231,40 @@ class ReporteService {
         return array_slice($result, 0, 10);
     }
 
-    // ========================
-    // TOP TICKETS PROBLEMÁTICOS
-    // ========================
+    /**
+     * Compatibilidad Java/PHP:
+     * - masReabiertos
+     * - mayorTiempoSinResolver
+     * - sinPrimeraRespuesta
+     * - criticosSinResolver
+     * + ranking por score como valor agregado
+     */
     public static function generarTopTicketsProblematicos(array $filtros = [], int $limite = 10): array {
         $desde = $filtros['desde'] ?? date('Y-m-d H:i:s', strtotime('-1 month'));
         $hasta = $filtros['hasta'] ?? date('Y-m-d H:i:s');
         $incluirResueltos = (bool) ($filtros['incluirResueltos'] ?? false);
 
+        $referenceTs = self::resolveReferenceTs($hasta);
         $tickets = Ticket::getByPeriodo($desde, $hasta);
-        $activos = ['ABIERTO', 'REABIERTO', 'EN_PROCESO', 'EN_ESPERA'];
+
+        $estadosActivos = ['ABIERTO', 'REABIERTO', 'EN_PROCESO', 'EN_ESPERA'];
         if (!$incluirResueltos) {
-            $tickets = array_values(array_filter($tickets, fn($t) => in_array($t['estado'], $activos, true)));
+            $tickets = array_values(array_filter($tickets, fn($t) => in_array($t['estado'], $estadosActivos, true)));
         }
 
-        $items = [];
+        $itemsScoring = [];
         foreach ($tickets as $t) {
-            $analisis = self::calcularScoreProblema($t);
-            $items[] = [
+            $analisis = self::calcularScoreProblema($t, $referenceTs);
+            $item = [
+                'id' => (int) ($t['id'] ?? 0),
                 'ticketId' => (int) ($t['id'] ?? 0),
                 'folio' => $t['folio'] ?? null,
                 'titulo' => $t['titulo'] ?? '',
                 'estado' => $t['estado'] ?? 'NO_CONFIRMADO',
                 'prioridad' => $t['prioridad'] ?? 'MEDIA',
                 'tecnicoId' => !empty($t['asignado_a_id']) ? (int) $t['asignado_a_id'] : null,
-                'tecnicoNombre' => $t['asignado_nombre'] ?? null,
+                'tecnico' => $t['asignado_nombre'] ?? null,
+                'tecnicoAsignado' => $t['asignado_nombre'] ?? null,
                 'categoriaId' => !empty($t['categoria_id']) ? (int) $t['categoria_id'] : null,
                 'categoriaNombre' => $t['categoria_nombre'] ?? null,
                 'ubicacionId' => !empty($t['ubicacion_id']) ? (int) $t['ubicacion_id'] : null,
@@ -275,19 +274,52 @@ class ReporteService {
                 'fechaResolucion' => $t['fecha_resolucion'] ?? null,
                 'diasAbierto' => $analisis['diasAbierto'],
                 'horasSinResolver' => $analisis['horasSinResolver'],
+                'horasEspera' => $analisis['horasEsperaSinPrimeraRespuesta'],
                 'tiempoEnEsperaHoras' => $analisis['tiempoEnEsperaHoras'],
-                'reaperturas' => (int) ($t['reabierto_count'] ?? 0),
+                'reabiertos' => (int) ($t['reabierto_count'] ?? 0),
+                'contadorReaperturas' => (int) ($t['reabierto_count'] ?? 0),
                 'comentariosCount' => $t['comentarios_count'] ?? null,
                 'scoreProblema' => $analisis['scoreProblema'],
                 'factores' => $analisis['factores'],
                 'razones' => $analisis['razones'],
             ];
+            $itemsScoring[] = $item;
         }
 
-        usort($items, fn($a, $b) => $b['scoreProblema'] <=> $a['scoreProblema']);
-        $items = array_slice($items, 0, max(1, $limite));
+        usort($itemsScoring, fn($a, $b) => $b['scoreProblema'] <=> $a['scoreProblema']);
+        $rankingPorScore = array_slice($itemsScoring, 0, max(1, $limite));
+
+        $masReabiertos = $itemsScoring;
+        usort($masReabiertos, fn($a, $b) => $b['contadorReaperturas'] <=> $a['contadorReaperturas']);
+        $masReabiertos = array_values(array_filter($masReabiertos, fn($x) => $x['contadorReaperturas'] > 0));
+        $masReabiertos = array_slice($masReabiertos, 0, max(1, $limite));
+
+        $mayorTiempoSinResolver = $itemsScoring;
+        usort($mayorTiempoSinResolver, fn($a, $b) => $b['diasAbierto'] <=> $a['diasAbierto']);
+        $mayorTiempoSinResolver = array_slice($mayorTiempoSinResolver, 0, max(1, $limite));
+
+        $sinPrimeraRespuesta = array_values(array_filter(
+            $itemsScoring,
+            fn($x) => empty($x['fechaResolucion']) && $x['horasEspera'] > 0
+        ));
+        usort($sinPrimeraRespuesta, fn($a, $b) => $b['horasEspera'] <=> $a['horasEspera']);
+        $sinPrimeraRespuesta = array_slice($sinPrimeraRespuesta, 0, max(1, $limite));
+
+        $criticosSinResolver = array_values(array_filter(
+            $itemsScoring,
+            fn($x) => in_array(strtoupper((string) $x['prioridad']), ['ALTA', 'URGENTE'], true)
+                && !in_array($x['estado'], ['RESUELTO', 'CERRADO', 'CANCELADO'], true)
+        ));
+        usort($criticosSinResolver, fn($a, $b) => $b['scoreProblema'] <=> $a['scoreProblema']);
+        $criticosSinResolver = array_slice($criticosSinResolver, 0, max(1, $limite));
 
         return [
+            'masReabiertos' => $masReabiertos,
+            'mayorTiempoSinResolver' => $mayorTiempoSinResolver,
+            'sinPrimeraRespuesta' => $sinPrimeraRespuesta,
+            'criticosSinResolver' => $criticosSinResolver,
+            'rankingPorScore' => $rankingPorScore,
+            'itemsScoring' => $rankingPorScore,
             'criterios' => [
                 'limite' => $limite,
                 'scoreFormula' => 'prioridad + antiguedad + reaperturas + espera + sinAsignar + slaRiesgo + estadoCritico',
@@ -297,23 +329,19 @@ class ReporteService {
                     'ticketsActivosSobrecargaTecnico' => self::ALERTA_SOBRECARGA_TECNICO_UMBRAL,
                 ],
             ],
-            'items' => $items,
             'resumen' => [
                 'totalEvaluados' => count($tickets),
-                'totalDevueltos' => count($items),
+                'totalDevueltos' => count($rankingPorScore),
             ],
         ];
     }
 
-    // ========================
-    // ALERTAS
-    // ========================
     public static function alertas(string $desde, string $hasta): array {
         $tickets = Ticket::getByPeriodo($desde, $hasta);
         $ahora = time();
         $activos = ['ABIERTO', 'REABIERTO', 'EN_PROCESO', 'EN_ESPERA'];
 
-        $sinAsignarItems = [];
+        $sinAsignarAntiguos = [];
         $vencidosItems = [];
         $enEsperaProlongada = [];
         $reabiertosMucho = [];
@@ -324,7 +352,7 @@ class ReporteService {
             $horasAbierto = self::hoursSince($t['fecha_creacion'] ?? null, $ahora);
 
             if ($activo && empty($t['asignado_a_id']) && $horasAbierto >= self::ALERTA_SIN_ASIGNAR_HORAS) {
-                $sinAsignarItems[] = [
+                $sinAsignarAntiguos[] = [
                     'ticketId' => (int) ($t['id'] ?? 0),
                     'titulo' => $t['titulo'] ?? '',
                     'horasAbierto' => $horasAbierto,
@@ -365,7 +393,9 @@ class ReporteService {
             }
         }
 
-        $criticos = count(array_filter($tickets, fn($t) => in_array(($t['prioridad'] ?? ''), ['ALTA', 'URGENTE'], true) && in_array(($t['estado'] ?? ''), $activos, true)));
+        $ticketsSinAsignar = count(array_filter($tickets, fn($t) => empty($t['asignado_a_id']) && !in_array(($t['estado'] ?? ''), ['CERRADO', 'CANCELADO'], true)));
+        $ticketsVencidos = count($vencidosItems);
+        $ticketsCriticosPendientes = count(array_filter($tickets, fn($t) => in_array(($t['prioridad'] ?? ''), ['ALTA', 'URGENTE'], true) && in_array(($t['estado'] ?? ''), $activos, true)));
 
         $tecnicos = [];
         foreach ($tickets as $t) {
@@ -387,56 +417,53 @@ class ReporteService {
             }
         }
 
-        $tecnicosSobrecargados = array_values(array_filter(
+        $tecnicosSobrecargadosItems = array_values(array_filter(
             $tecnicos,
             fn($x) => $x['ticketsActivos'] >= self::ALERTA_SOBRECARGA_TECNICO_UMBRAL
         ));
-        usort($tecnicosSobrecargados, fn($a, $b) => $b['ticketsActivos'] <=> $a['ticketsActivos']);
+        usort($tecnicosSobrecargadosItems, fn($a, $b) => $b['ticketsActivos'] <=> $a['ticketsActivos']);
 
         return [
-            // Compatibilidad previa
-            'ticketsSinAsignar' => count($sinAsignarItems),
-            'ticketsVencidos' => count($vencidosItems),
-            'ticketsCriticosPendientes' => $criticos,
+            // Claves históricas / java-compatible (escalares)
+            'ticketsSinAsignar' => $ticketsSinAsignar,
+            'ticketsVencidos' => $ticketsVencidos,
+            'ticketsCriticosPendientes' => $ticketsCriticosPendientes,
+            'ticketsReabiertosMuchasVeces' => count($reabiertosMucho),
+            'tecnicosSobrecargados' => count($tecnicosSobrecargadosItems),
+            'tieneAlertas' => $ticketsSinAsignar > 0
+                || $ticketsVencidos > 0
+                || $ticketsCriticosPendientes > 0
+                || count($reabiertosMucho) > 0
+                || count($tecnicosSobrecargadosItems) > 0,
 
-            // Nuevas alertas estructuradas
-            'ticketsReabiertosMuchasVeces' => [
+            // Detalles extendidos (sin romper escalares)
+            'ticketsReabiertosMuchasVecesDetalle' => [
                 'umbral' => self::ALERTA_REAPERTURAS_UMBRAL,
                 'total' => count($reabiertosMucho),
                 'items' => $reabiertosMucho,
             ],
-            'tecnicosSobrecargados' => [
+            'tecnicosSobrecargadosDetalle' => [
                 'umbral' => self::ALERTA_SOBRECARGA_TECNICO_UMBRAL,
-                'total' => count($tecnicosSobrecargados),
-                'items' => $tecnicosSobrecargados,
+                'total' => count($tecnicosSobrecargadosItems),
+                'items' => $tecnicosSobrecargadosItems,
             ],
-            'ticketsSinAsignarAntiguos' => [
+            'ticketsSinAsignarAntiguosDetalle' => [
                 'umbralHoras' => self::ALERTA_SIN_ASIGNAR_HORAS,
-                'total' => count($sinAsignarItems),
-                'items' => $sinAsignarItems,
+                'total' => count($sinAsignarAntiguos),
+                'items' => $sinAsignarAntiguos,
             ],
-            'ticketsVencidosSLA' => [
-                'total' => count($vencidosItems),
+            'ticketsVencidosSLADetalle' => [
+                'total' => $ticketsVencidos,
                 'items' => $vencidosItems,
             ],
-            'ticketsEnEsperaProlongada' => [
+            'ticketsEnEsperaProlongadaDetalle' => [
                 'umbralHoras' => self::ALERTA_ESPERA_HORAS,
                 'total' => count($enEsperaProlongada),
                 'items' => $enEsperaProlongada,
             ],
-
-            'tieneAlertas' => count($sinAsignarItems) > 0
-                || count($vencidosItems) > 0
-                || $criticos > 0
-                || count($reabiertosMucho) > 0
-                || count($tecnicosSobrecargados) > 0
-                || count($enEsperaProlongada) > 0,
         ];
     }
 
-    // ========================
-    // TOP CATEGORÍAS
-    // ========================
     public static function topCategorias(string $desde, string $hasta): array {
         $tickets = Ticket::getByPeriodo($desde, $hasta);
         $porCat = [];
@@ -452,24 +479,37 @@ class ReporteService {
         return $result;
     }
 
-    // ========================
-    // HELPERS INTERNOS
-    // ========================
-    private static function calcularScoreProblema(array $t): array {
-        $ahora = time();
+    public static function generarPayloadReporteAdmin(string $desde, string $hasta): array {
+        return [
+            'periodo' => [
+                'desde' => $desde,
+                'hasta' => $hasta,
+                'generadoEn' => date('Y-m-d H:i:s'),
+            ],
+            'kpis' => self::kpisEjecutivos($desde, $hasta),
+            'reporteSLA' => self::reporteSLA($desde, $hasta),
+            'analisisTiempos' => self::analisisTiempos($desde, $hasta),
+            'desempenoTecnicos' => self::desempenoTecnicos($desde, $hasta),
+            'analisisPorPrioridad' => self::analisisPorPrioridad($desde, $hasta),
+            'analisisPorUbicaciones' => self::analisisPorUbicaciones($desde, $hasta),
+            'topCategorias' => self::topCategorias($desde, $hasta),
+            'alertas' => self::alertas($desde, $hasta),
+            'ticketsProblematicos' => self::generarTopTicketsProblematicos([
+                'desde' => $desde,
+                'hasta' => $hasta,
+            ]),
+        ];
+    }
+
+    private static function calcularScoreProblema(array $t, int $referenceTs): array {
         $estado = $t['estado'] ?? '';
         $activo = in_array($estado, ['ABIERTO', 'REABIERTO', 'EN_PROCESO', 'EN_ESPERA'], true);
-        $horasSinResolver = self::hoursSince($t['fecha_creacion'] ?? null, $ahora);
+        $horasSinResolver = self::hoursSince($t['fecha_creacion'] ?? null, $referenceTs);
         $diasAbierto = round($horasSinResolver / 24, 2);
         $tiempoEsperaHoras = round(((int) ($t['tiempo_espera_seg'] ?? 0)) / 3600, 2);
         $reaperturas = (int) ($t['reabierto_count'] ?? 0);
 
-        $prioridadMap = [
-            'URGENTE' => 35,
-            'ALTA' => 30,
-            'MEDIA' => 15,
-            'BAJA' => 5,
-        ];
+        $prioridadMap = ['URGENTE' => 35, 'ALTA' => 30, 'MEDIA' => 15, 'BAJA' => 5];
         $scorePrioridad = $prioridadMap[strtoupper((string) ($t['prioridad'] ?? 'MEDIA'))] ?? 10;
         $scoreAntiguedad = min(25, round($diasAbierto * 4, 2));
         $scoreReaperturas = min(30, $reaperturas * 10);
@@ -488,6 +528,9 @@ class ReporteService {
         }
 
         $scoreEstadoCritico = ($estado === 'EN_ESPERA' && $tiempoEsperaHoras >= 24) ? 5 : 0;
+        $horasEsperaSinPrimeraRespuesta = empty($t['fecha_primera_respuesta'])
+            ? round($horasSinResolver, 2)
+            : round(max(0, (($t['tiempo_primera_respuesta_seg'] ?? 0) / 3600)), 2);
 
         $factores = [
             'prioridad' => $scorePrioridad,
@@ -510,11 +553,21 @@ class ReporteService {
         return [
             'diasAbierto' => $diasAbierto,
             'horasSinResolver' => round($horasSinResolver, 2),
+            'horasEsperaSinPrimeraRespuesta' => $horasEsperaSinPrimeraRespuesta,
             'tiempoEnEsperaHoras' => $tiempoEsperaHoras,
             'factores' => $factores,
             'scoreProblema' => round(array_sum($factores), 2),
             'razones' => $razones,
         ];
+    }
+
+    private static function resolveReferenceTs(string $hasta): int {
+        $hastaTs = strtotime($hasta);
+        if ($hastaTs === false) {
+            return time();
+        }
+        $now = time();
+        return $hastaTs >= $now ? $now : $hastaTs;
     }
 
     private static function hoursSince(?string $date, ?int $nowTs = null): float {

@@ -47,11 +47,15 @@ class FileService {
 
     public static function eliminar(?string $nombre): void {
         if (empty($nombre)) return;
-        $safe = basename((string) $nombre);
-        $ruta = rtrim(UPLOAD_PATH, '/') . '/' . $safe;
+        $ruta = self::obtenerRutaArchivo((string) $nombre);
         if (is_file($ruta)) {
             @unlink($ruta);
         }
+    }
+
+    public static function obtenerRutaArchivo(string $nombre): string {
+        $safe = basename($nombre);
+        return rtrim(UPLOAD_PATH, '/') . '/' . $safe;
     }
 
     private static function parseCsvList(string $value): array {
