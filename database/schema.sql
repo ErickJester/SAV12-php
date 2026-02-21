@@ -2,8 +2,6 @@
 -- Base de datos: sav12_app
 
 -- Crear la base de datos si no existe
-CREATE DATABASE IF NOT EXISTS sav12_app CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE sav12_app;
 
 -- Tabla de usuarios
 CREATE TABLE IF NOT EXISTS usuarios (

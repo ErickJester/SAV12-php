@@ -6,7 +6,6 @@
 --   USUARIO -> alumno.demo@sav12.local / Alumno123! (opcional para flujos)
 -- IMPORTANTE: Cambiar contraseñas inmediatamente en producción.
 
-USE sav12_app;
 
 -- Catálogos mínimos (idempotentes)
 INSERT INTO categorias (nombre, descripcion, activo) VALUES

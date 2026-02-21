@@ -1,7 +1,6 @@
 -- Patch de baseline operativo (idempotente) para entornos existentes
 -- Objetivo: asegurar índices de soporte para filtros/reportes en tickets.
-
-USE sav12_app;
+-- Portabilidad: ejecutar seleccionando DB objetivo con mysql -D <nombre_db>.
 
 SET @db := DATABASE();
 
@@ -9,9 +8,12 @@ SET @db := DATABASE();
 SET @sql := IF(
     EXISTS (
         SELECT 1 FROM information_schema.statistics
-        WHERE table_schema = @db AND table_name = 'tickets' AND index_name = 'idx_prioridad'
+        WHERE table_schema = @db
+          AND table_name = 'tickets'
+          AND column_name = 'prioridad'
+          AND seq_in_index = 1
     ),
-    'SELECT "idx_prioridad already exists"',
+    'SELECT "coverage exists for tickets.prioridad"',
     'ALTER TABLE tickets ADD INDEX idx_prioridad (prioridad)'
 );
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
@@ -20,9 +22,12 @@ PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 SET @sql := IF(
     EXISTS (
         SELECT 1 FROM information_schema.statistics
-        WHERE table_schema = @db AND table_name = 'tickets' AND index_name = 'idx_categoria_id'
+        WHERE table_schema = @db
+          AND table_name = 'tickets'
+          AND column_name = 'categoria_id'
+          AND seq_in_index = 1
     ),
-    'SELECT "idx_categoria_id already exists"',
+    'SELECT "coverage exists for tickets.categoria_id"',
     'ALTER TABLE tickets ADD INDEX idx_categoria_id (categoria_id)'
 );
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
@@ -31,9 +36,12 @@ PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 SET @sql := IF(
     EXISTS (
         SELECT 1 FROM information_schema.statistics
-        WHERE table_schema = @db AND table_name = 'tickets' AND index_name = 'idx_ubicacion_id'
+        WHERE table_schema = @db
+          AND table_name = 'tickets'
+          AND column_name = 'ubicacion_id'
+          AND seq_in_index = 1
     ),
-    'SELECT "idx_ubicacion_id already exists"',
+    'SELECT "coverage exists for tickets.ubicacion_id"',
     'ALTER TABLE tickets ADD INDEX idx_ubicacion_id (ubicacion_id)'
 );
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
@@ -42,9 +50,12 @@ PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 SET @sql := IF(
     EXISTS (
         SELECT 1 FROM information_schema.statistics
-        WHERE table_schema = @db AND table_name = 'tickets' AND index_name = 'idx_fecha_actualizacion'
+        WHERE table_schema = @db
+          AND table_name = 'tickets'
+          AND column_name = 'fecha_actualizacion'
+          AND seq_in_index = 1
     ),
-    'SELECT "idx_fecha_actualizacion already exists"',
+    'SELECT "coverage exists for tickets.fecha_actualizacion"',
     'ALTER TABLE tickets ADD INDEX idx_fecha_actualizacion (fecha_actualizacion)'
 );
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
@@ -53,9 +64,12 @@ PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 SET @sql := IF(
     EXISTS (
         SELECT 1 FROM information_schema.statistics
-        WHERE table_schema = @db AND table_name = 'tickets' AND index_name = 'idx_fecha_resolucion'
+        WHERE table_schema = @db
+          AND table_name = 'tickets'
+          AND column_name = 'fecha_resolucion'
+          AND seq_in_index = 1
     ),
-    'SELECT "idx_fecha_resolucion already exists"',
+    'SELECT "coverage exists for tickets.fecha_resolucion"',
     'ALTER TABLE tickets ADD INDEX idx_fecha_resolucion (fecha_resolucion)'
 );
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
@@ -64,9 +78,12 @@ PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 SET @sql := IF(
     EXISTS (
         SELECT 1 FROM information_schema.statistics
-        WHERE table_schema = @db AND table_name = 'tickets' AND index_name = 'idx_fecha_cierre'
+        WHERE table_schema = @db
+          AND table_name = 'tickets'
+          AND column_name = 'fecha_cierre'
+          AND seq_in_index = 1
     ),
-    'SELECT "idx_fecha_cierre already exists"',
+    'SELECT "coverage exists for tickets.fecha_cierre"',
     'ALTER TABLE tickets ADD INDEX idx_fecha_cierre (fecha_cierre)'
 );
 PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;

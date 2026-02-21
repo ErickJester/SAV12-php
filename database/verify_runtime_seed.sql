@@ -1,5 +1,4 @@
 -- Verificación de baseline operativo de DB
-USE sav12_app;
 
 SELECT 'admin_exists' AS check_name, COUNT(*) AS total
 FROM usuarios
