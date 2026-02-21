@@ -1,7 +1,7 @@
 <?php $pageTitle = 'Ticket #' . $ticket['id'] . ' - SAV12'; ob_start(); ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-ticket-detailed"></i> Ticket #<?= $ticket['id'] ?></h2>
-    <a href="/usuario/mis-tickets" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+    <a href="<?= base_url('usuario/mis-tickets') ?>" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
 
 <div class="row">
@@ -15,10 +15,10 @@
             </div>
             <p><?= nl2br(htmlspecialchars($ticket['descripcion'])) ?></p>
             <?php if (!empty($ticket['evidencia_problema'])): ?>
-                <div class="mt-2"><strong>Evidencia:</strong><br><img src="/uploads/<?= $ticket['evidencia_problema'] ?>" class="img-fluid mt-1" style="max-height:300px;border-radius:8px"></div>
+                <div class="mt-2"><strong>Evidencia:</strong><br><img src="<?= base_url('uploads/' . $ticket['evidencia_problema']) ?>" class="img-fluid mt-1" style="max-height:300px;border-radius:8px"></div>
             <?php endif; ?>
             <?php if (!empty($ticket['evidencia_resolucion'])): ?>
-                <div class="mt-2"><strong>Evidencia resolución:</strong><br><img src="/uploads/<?= $ticket['evidencia_resolucion'] ?>" class="img-fluid mt-1" style="max-height:300px;border-radius:8px"></div>
+                <div class="mt-2"><strong>Evidencia resolución:</strong><br><img src="<?= base_url('uploads/' . $ticket['evidencia_resolucion']) ?>" class="img-fluid mt-1" style="max-height:300px;border-radius:8px"></div>
             <?php endif; ?>
         </div>
 
@@ -36,7 +36,7 @@
             <?php if (empty($comentarios)): ?><p class="text-muted">Sin comentarios aún</p><?php endif; ?>
 
             <?php if (!in_array($ticket['estado'], ['CERRADO', 'CANCELADO'])): ?>
-            <form action="/usuario/ticket/<?= $ticket['id'] ?>/comentar" method="POST" class="mt-3">
+            <form action="<?= base_url('usuario/ticket/' . $ticket['id'] . '/comentar') ?>" method="POST" class="mt-3">
                 <?= Session::csrfField() ?>
                 <textarea name="contenido" class="form-control mb-2" rows="3" placeholder="Escribe un comentario..." required></textarea>
                 <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-send"></i> Enviar</button>
@@ -60,7 +60,7 @@
 
         <!-- Reabrir -->
         <?php if (in_array($ticket['estado'], ['RESUELTO', 'CERRADO', 'CANCELADO'])): ?>
-        <form action="/usuario/ticket/<?= $ticket['id'] ?>/reabrir" method="POST">
+        <form action="<?= base_url('usuario/ticket/' . $ticket['id'] . '/reabrir') ?>" method="POST">
             <?= Session::csrfField() ?>
             <button type="submit" class="btn btn-warning w-100" onclick="return confirm('¿Reabrir este ticket?')"><i class="bi bi-arrow-counterclockwise"></i> Reabrir Ticket</button>
         </form>

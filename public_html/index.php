@@ -78,6 +78,8 @@ $router->post('/admin/tickets/{id}/asignarme',       'AdministradorController', 
 $router->post('/admin/ticket/{id}/reabrir',          'AdministradorController', 'reabrirTicket');
 
 $router->get('/admin/reportes', 'AdministradorController', 'reportes');
+$router->get('/admin/reportes/export/csv', 'AdministradorController', 'exportarReportesCsv');
+$router->get('/admin/reportes/export/pdf', 'AdministradorController', 'exportarReportesPdf');
 
 // Ejecutar
 $router->dispatch();

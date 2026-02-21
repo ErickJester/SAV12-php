@@ -1,7 +1,6 @@
 <?php
 /**
- * Servicio de Email - usa mail() nativo o PHPMailer si está disponible
- * Compatible con Hostinger SMTP
+ * Servicio de Email - SMTP (PHPMailer si está disponible) + fallback nativo.
  */
 
 class EmailService {
@@ -9,50 +8,71 @@ class EmailService {
     private static function send(string $to, string $subject, string $body): bool {
         $config = require BASE_PATH . '/config/mail.php';
 
-        if (!$config['enabled']) {
-            error_log("[EmailService] Mail disabled - would send to: $to subj: $subject");
+        if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+            error_log('[EmailService] Destino inválido, envío omitido.');
             return false;
         }
 
-        // Si PHPMailer está disponible (composer require phpmailer/phpmailer)
+        if (empty($config['from']) || !filter_var((string) $config['from'], FILTER_VALIDATE_EMAIL)) {
+            error_log('[EmailService] MAIL_FROM inválido, envío omitido.');
+            return false;
+        }
+
+        if (empty($config['enabled'])) {
+            error_log("[EmailService] MAIL_ENABLED=false; envío omitido a {$to}");
+            return false;
+        }
+
         $phpmailerPath = BASE_PATH . '/vendor/autoload.php';
         if (file_exists($phpmailerPath)) {
             require_once $phpmailerPath;
-            return self::sendWithPHPMailer($to, $subject, $body, $config);
+            if (class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
+                $ok = self::sendWithPHPMailer($to, $subject, $body, $config);
+                if ($ok) {
+                    return true;
+                }
+                error_log("[EmailService] SMTP falló (host={$config['host']} port={$config['port']}), intentando fallback mail().");
+            }
         }
 
-        // Fallback: mail() nativo
+        return self::sendWithNativeMail($to, $subject, $body, $config);
+    }
+
+    private static function sendWithNativeMail(string $to, string $subject, string $body, array $config): bool {
         $headers = "From: {$config['from_name']} <{$config['from']}>\r\n";
         $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
-        return @mail($to, $subject, $body, $headers);
+        $ok = @mail($to, $subject, $body, $headers);
+        if (!$ok) {
+            error_log('[EmailService] Fallback mail() falló.');
+        }
+        return $ok;
     }
 
     private static function sendWithPHPMailer(string $to, string $subject, string $body, array $config): bool {
         try {
             $mail = new PHPMailer\PHPMailer\PHPMailer(true);
             $mail->isSMTP();
-            $mail->Host       = $config['host'];
+            $mail->Host       = (string) $config['host'];
             $mail->SMTPAuth   = true;
-            $mail->Username   = $config['username'];
-            $mail->Password   = $config['password'];
-            $mail->SMTPSecure = $config['encryption'];
-            $mail->Port       = $config['port'];
+            $mail->Username   = (string) $config['username'];
+            $mail->Password   = (string) $config['password'];
+            $mail->SMTPSecure = (string) $config['encryption'];
+            $mail->Port       = (int) $config['port'];
             $mail->CharSet    = 'UTF-8';
+            $mail->Timeout    = 10;
 
-            $mail->setFrom($config['from'], $config['from_name']);
+            $mail->setFrom((string) $config['from'], (string) $config['from_name']);
             $mail->addAddress($to);
             $mail->Subject = $subject;
             $mail->Body    = $body;
 
             $mail->send();
             return true;
-        } catch (Exception $e) {
-            error_log("[EmailService] Error: " . $e->getMessage());
+        } catch (Throwable $e) {
+            error_log('[EmailService] SMTP error: ' . $e->getMessage());
             return false;
         }
     }
-
-    // === Métodos públicos (equivalentes al Java) ===
 
     public static function enviarBienvenida(array $usuario): void {
         self::send(
@@ -84,25 +104,54 @@ class EmailService {
         if (empty($ticket['creador_correo'])) return;
         self::send(
             $ticket['creador_correo'],
-            "Actualización en tu ticket: " . ($ticket['titulo'] ?? ''),
+            'Actualización en tu ticket: ' . ($ticket['titulo'] ?? ''),
             "Hola " . ($ticket['creador_nombre'] ?? '') . ",\n\nTu ticket ha sido actualizado.\n\nDetalles: $detalles\n\nEstado actual: {$ticket['estado']}\n\nSaludos."
         );
     }
 
     public static function notificarTecnicoAsignado(array $ticket): void {
-        if (empty($ticket['asignado_correo'] ?? ($ticket['asignado_a_id'] ? null : null))) {
-            // Buscar correo del asignado
-            if (!empty($ticket['asignado_a_id'])) {
-                require_once APP_PATH . '/Models/Usuario.php';
-                $tecnico = Usuario::findById($ticket['asignado_a_id']);
-                if ($tecnico && !empty($tecnico['correo'])) {
-                    self::send(
-                        $tecnico['correo'],
-                        "Se te ha asignado un ticket: " . ($ticket['titulo'] ?? ''),
-                        "Hola {$tecnico['nombre']},\n\nSe te ha asignado el ticket:\nTítulo: {$ticket['titulo']}\nDescripción: {$ticket['descripcion']}\n\nPor favor revisa el sistema."
-                    );
-                }
+        $destino = null;
+        $nombreTecnico = 'Técnico';
+
+        // 1) Enviar directo si asignado_correo viene en payload
+        if (!empty($ticket['asignado_correo']) && filter_var((string) $ticket['asignado_correo'], FILTER_VALIDATE_EMAIL)) {
+            $destino = (string) $ticket['asignado_correo'];
+            $nombreTecnico = (string) ($ticket['asignado_nombre'] ?? $nombreTecnico);
+        }
+
+        // 2) Si no viene correo, buscar por asignado_a_id
+        if ($destino === null && !empty($ticket['asignado_a_id'])) {
+            require_once APP_PATH . '/Models/Usuario.php';
+            $tecnico = Usuario::findById((int) $ticket['asignado_a_id']);
+            if ($tecnico && !empty($tecnico['correo']) && filter_var((string) $tecnico['correo'], FILTER_VALIDATE_EMAIL)) {
+                $destino = (string) $tecnico['correo'];
+                $nombreTecnico = (string) ($tecnico['nombre'] ?? $nombreTecnico);
             }
         }
+
+        // 3) Si no hay destinatario resoluble, log y salir
+        if ($destino === null) {
+            error_log('[EmailService] notificarTecnicoAsignado sin destinatario válido.');
+            return;
+        }
+
+        self::send(
+            $destino,
+            'Se te ha asignado un ticket: ' . ($ticket['titulo'] ?? ''),
+            "Hola {$nombreTecnico},\n\nSe te ha asignado el ticket:\nTítulo: {$ticket['titulo']}\nDescripción: {$ticket['descripcion']}\n\nPor favor revisa el sistema."
+        );
+    }
+
+    // Alias opcionales de paridad semántica
+    public static function sendTestEmail(string $to, string $subject = 'SAV12 Test Email', string $body = 'Correo de prueba SAV12'): bool {
+        return self::send($to, $subject, $body);
+    }
+
+    public static function sendLoginConfirmation(array $usuario): bool {
+        return self::send(
+            (string) ($usuario['correo'] ?? ''),
+            'Confirmación de inicio de sesión',
+            "Hola " . ($usuario['nombre'] ?? 'usuario') . ",\n\nSe detectó un inicio de sesión en tu cuenta SAV12."
+        );
     }
 }

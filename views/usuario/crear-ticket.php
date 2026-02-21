@@ -7,7 +7,7 @@
 <?php endif; ?>
 
 <div class="card p-4" style="border-radius:16px;border:none;box-shadow:0 4px 15px rgba(0,0,0,0.05)">
-    <form action="/usuario/crear-ticket" method="POST" enctype="multipart/form-data">
+    <form action="<?= base_url('usuario/crear-ticket') ?>" method="POST" enctype="multipart/form-data">
         <?= Session::csrfField() ?>
         <div class="mb-3">
             <label class="form-label fw-bold">Título del problema</label>
@@ -53,7 +53,7 @@
         </div>
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i> Enviar Ticket</button>
-            <a href="/usuario/panel" class="btn btn-outline-secondary">Cancelar</a>
+            <a href="<?= base_url('usuario/panel') ?>" class="btn btn-outline-secondary">Cancelar</a>
         </div>
     </form>
 </div>

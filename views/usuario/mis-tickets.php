@@ -1,7 +1,7 @@
 <?php $pageTitle = 'Mis Tickets - SAV12'; ob_start(); ?>
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-ticket-perforated"></i> Mis Tickets</h2>
-    <a href="/usuario/crear-ticket" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nuevo</a>
+    <a href="<?= base_url('usuario/crear-ticket') ?>" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nuevo</a>
 </div>
 <?php if (isset($_GET['success'])): ?>
     <div class="alert alert-success"><i class="bi bi-check-circle"></i> Ticket creado exitosamente.</div>
@@ -18,7 +18,7 @@
                 <td><span class="badge-estado badge-<?= $t['estado'] ?>"><?= str_replace('_',' ',$t['estado']) ?></span></td>
                 <td><span class="badge-estado badge-<?= $t['prioridad'] ?>"><?= $t['prioridad'] ?></span></td>
                 <td><?= date('d/m/Y H:i', strtotime($t['fecha_creacion'])) ?></td>
-                <td><a href="/usuario/ticket/<?= $t['id'] ?>" class="btn btn-sm btn-outline-primary">Ver</a></td>
+                <td><a href="<?= base_url('usuario/ticket/' . $t['id']) ?>" class="btn btn-sm btn-outline-primary">Ver</a></td>
             </tr>
         <?php endforeach; ?>
         <?php if (empty($tickets)): ?><tr><td colspan="7" class="text-center py-4 text-muted">Sin tickets</td></tr><?php endif; ?>

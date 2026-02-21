@@ -13,8 +13,8 @@
         <tr><td><?= $t['id'] ?></td><td><?= htmlspecialchars($t['titulo']) ?></td>
         <td><span class="badge-estado badge-<?= $t['prioridad'] ?>"><?= $t['prioridad'] ?></span></td>
         <td><?= date('d/m/Y H:i', strtotime($t['fecha_creacion'])) ?></td>
-        <td><a href="/tecnico/ticket/<?= $t['id'] ?>" class="btn btn-sm btn-outline-primary me-1">Ver</a>
-        <form action="/tecnico/ticket/<?= $t['id'] ?>/asignar" method="POST" class="d-inline"><?= Session::csrfField() ?><button class="btn btn-sm btn-success">Tomar</button></form></td></tr>
+        <td><a href="<?= base_url('tecnico/ticket/' . $t['id']) ?>" class="btn btn-sm btn-outline-primary me-1">Ver</a>
+        <form action="<?= base_url('tecnico/ticket/' . $t['id'] . '/asignar') ?>" method="POST" class="d-inline"><?= Session::csrfField() ?><button class="btn btn-sm btn-success">Tomar</button></form></td></tr>
     <?php endforeach; ?>
     <?php if (empty($ticketsSinAsignar)): ?><tr><td colspan="5" class="text-center py-3 text-muted">Sin tickets pendientes</td></tr><?php endif; ?>
     </tbody></table></div></div>
@@ -27,7 +27,7 @@
         <tr><td><?= $t['id'] ?></td><td><?= htmlspecialchars($t['titulo']) ?></td>
         <td><span class="badge-estado badge-<?= $t['estado'] ?>"><?= str_replace('_',' ',$t['estado']) ?></span></td>
         <td><span class="badge-estado badge-<?= $t['prioridad'] ?>"><?= $t['prioridad'] ?></span></td>
-        <td><a href="/tecnico/ticket/<?= $t['id'] ?>" class="btn btn-sm btn-outline-primary">Ver</a></td></tr>
+        <td><a href="<?= base_url('tecnico/ticket/' . $t['id']) ?>" class="btn btn-sm btn-outline-primary">Ver</a></td></tr>
     <?php endforeach; ?>
     </tbody></table></div></div>
 <?php $content = ob_get_clean(); include VIEW_PATH . '/layouts/main.php'; ?>

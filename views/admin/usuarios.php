@@ -9,7 +9,7 @@
             <td><?= htmlspecialchars($u['nombre']) ?></td>
             <td><?= htmlspecialchars($u['correo']) ?></td>
             <td>
-                <form action="/admin/usuarios/<?= $u['id'] ?>/cambiar-rol" method="POST" class="d-inline">
+                <form action="<?= base_url('admin/usuarios/' . $u['id'] . '/cambiar-rol') ?>" method="POST" class="d-inline">
                     <?= Session::csrfField() ?>
                     <select name="rol" class="form-select form-select-sm d-inline" style="width:140px" onchange="this.form.submit()">
                         <?php foreach (['ALUMNO','DOCENTE','ADMINISTRATIVO','TECNICO','ADMIN'] as $r): ?>
@@ -21,7 +21,7 @@
             <td><?= htmlspecialchars($u['boleta'] ?? $u['id_trabajador'] ?? '-') ?></td>
             <td><span class="badge bg-<?= $u['activo'] ? 'success' : 'danger' ?>"><?= $u['activo'] ? 'Activo' : 'Inactivo' ?></span></td>
             <td>
-                <form action="/admin/usuarios/<?= $u['id'] ?>/cambiar-estado" method="POST" class="d-inline">
+                <form action="<?= base_url('admin/usuarios/' . $u['id'] . '/cambiar-estado') ?>" method="POST" class="d-inline">
                     <?= Session::csrfField() ?>
                     <input type="hidden" name="activo" value="<?= $u['activo'] ? '0' : '1' ?>">
                     <button class="btn btn-sm btn-<?= $u['activo'] ? 'warning' : 'success' ?>"><?= $u['activo'] ? 'Desactivar' : 'Activar' ?></button>

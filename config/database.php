@@ -9,5 +9,5 @@ return [
     'name'     => env('DB_NAME', 'sav12_app'),
     'user'     => env('DB_USER', 'root'),
     'password' => env('DB_PASS', ''),
-    'charset'  => 'utf8mb4',
+    'charset'  => env('DB_CHARSET', 'utf8mb4'),
 ];

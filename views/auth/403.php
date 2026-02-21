@@ -7,7 +7,7 @@
     <h1 class="display-1 text-danger">403</h1>
     <h3>Acceso Denegado</h3>
     <p class="text-muted">No tienes permisos para acceder a esta página.</p>
-    <a href="/" class="btn btn-primary">Volver al inicio</a>
+    <a href="<?= base_url() ?>" class="btn btn-primary">Volver al inicio</a>
 </div>
 </body>
 </html>

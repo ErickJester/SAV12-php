@@ -17,8 +17,8 @@ $currentUser = Session::isLoggedIn() ? [
     <title><?= htmlspecialchars($pageTitle) ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="/assets/css/style.css" rel="stylesheet">
-    <link href="/assets/css/panel.css" rel="stylesheet">
+    <link href="<?= base_url('assets/css/style.css') ?>" rel="stylesheet">
+    <link href="<?= base_url('assets/css/panel.css') ?>" rel="stylesheet">
     <?php if (isset($extraCss)): ?>
         <?php foreach ($extraCss as $css): ?>
             <link href="<?= $css ?>" rel="stylesheet">
@@ -72,44 +72,44 @@ $currentUser = Session::isLoggedIn() ? [
         </div>
         
         <?php if (Session::isAdmin()): ?>
-            <a href="/admin/panel" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/panel') ? 'active' : '' ?>">
+            <a href="<?= base_url('admin/panel') ?>" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/panel') ? 'active' : '' ?>">
                 <i class="bi bi-speedometer2"></i> Dashboard
             </a>
-            <a href="/admin/tickets" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/ticket') ? 'active' : '' ?>">
+            <a href="<?= base_url('admin/tickets') ?>" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/ticket') ? 'active' : '' ?>">
                 <i class="bi bi-ticket-perforated"></i> Tickets
             </a>
-            <a href="/admin/usuarios" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/usuarios') ? 'active' : '' ?>">
+            <a href="<?= base_url('admin/usuarios') ?>" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/usuarios') ? 'active' : '' ?>">
                 <i class="bi bi-people"></i> Usuarios
             </a>
-            <a href="/admin/categorias" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/categorias') ? 'active' : '' ?>">
+            <a href="<?= base_url('admin/categorias') ?>" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/categorias') ? 'active' : '' ?>">
                 <i class="bi bi-tags"></i> Categorías
             </a>
-            <a href="/admin/ubicaciones" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/ubicaciones') ? 'active' : '' ?>">
+            <a href="<?= base_url('admin/ubicaciones') ?>" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/ubicaciones') ? 'active' : '' ?>">
                 <i class="bi bi-geo-alt"></i> Ubicaciones
             </a>
-            <a href="/admin/reportes" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/reportes') ? 'active' : '' ?>">
+            <a href="<?= base_url('admin/reportes') ?>" class="<?= str_starts_with($_SERVER['REQUEST_URI'], '/admin/reportes') ? 'active' : '' ?>">
                 <i class="bi bi-bar-chart"></i> Reportes
             </a>
         <?php elseif (Session::isTecnico()): ?>
-            <a href="/tecnico/panel"><i class="bi bi-speedometer2"></i> Dashboard</a>
-            <a href="/tecnico/mis-tickets"><i class="bi bi-ticket-perforated"></i> Mis Tickets</a>
+            <a href="<?= base_url('tecnico/panel') ?>"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <a href="<?= base_url('tecnico/mis-tickets') ?>"><i class="bi bi-ticket-perforated"></i> Mis Tickets</a>
         <?php else: ?>
-            <a href="/usuario/panel"><i class="bi bi-speedometer2"></i> Mi Panel</a>
-            <a href="/usuario/crear-ticket"><i class="bi bi-plus-circle"></i> Nuevo Ticket</a>
-            <a href="/usuario/mis-tickets"><i class="bi bi-ticket-perforated"></i> Mis Tickets</a>
+            <a href="<?= base_url('usuario/panel') ?>"><i class="bi bi-speedometer2"></i> Mi Panel</a>
+            <a href="<?= base_url('usuario/crear-ticket') ?>"><i class="bi bi-plus-circle"></i> Nuevo Ticket</a>
+            <a href="<?= base_url('usuario/mis-tickets') ?>"><i class="bi bi-ticket-perforated"></i> Mis Tickets</a>
         <?php endif; ?>
 
         <div class="user-info">
             <i class="bi bi-person-circle"></i> <?= htmlspecialchars($currentUser['nombre']) ?><br>
             <small><?= $currentUser['rol'] ?></small><br>
-            <a href="/logout" class="mt-2 d-inline-block" style="padding:4px 0"><i class="bi bi-box-arrow-left"></i> Cerrar Sesión</a>
+            <a href="<?= base_url('logout') ?>" class="mt-2 d-inline-block" style="padding:4px 0"><i class="bi bi-box-arrow-left"></i> Cerrar Sesión</a>
         </div>
     </nav>
 
     <!-- Mobile header -->
     <nav class="navbar d-md-none bg-primary text-white p-3">
         <span class="navbar-brand text-white"><i class="bi bi-headset"></i> SAV12</span>
-        <a href="/logout" class="text-white"><i class="bi bi-box-arrow-left"></i></a>
+        <a href="<?= base_url('logout') ?>" class="text-white"><i class="bi bi-box-arrow-left"></i></a>
     </nav>
 
     <main class="main-content">
