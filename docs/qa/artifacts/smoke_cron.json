@@ -1,0 +1,25 @@
+{
+    "suite": "qa_smoke_cron",
+    "started_at": "2026-02-21T21:49:47+00:00",
+    "ended_at": "2026-02-21T21:49:48+00:00",
+    "results": [
+        {
+            "test": "cron_check_sla_breaches",
+            "status": "BLOCKED",
+            "evidence": "Bloqueo ambiental por APP_SECRET\/entorno; exit=0; duration=0.082s; output=[BOOTSTRAP] APP_SECRET inseguro o vacío en producción.\nConfiguración insegura: APP_SECRET requerido en producción.",
+            "timestamp": "2026-02-21T21:49:47+00:00"
+        },
+        {
+            "test": "cron_auto_escalate",
+            "status": "BLOCKED",
+            "evidence": "Bloqueo ambiental por APP_SECRET\/entorno; exit=0; duration=0.078s; output=[BOOTSTRAP] APP_SECRET inseguro o vacío en producción.\nConfiguración insegura: APP_SECRET requerido en producción.",
+            "timestamp": "2026-02-21T21:49:47+00:00"
+        },
+        {
+            "test": "cron_send_reminders",
+            "status": "BLOCKED",
+            "evidence": "Bloqueo ambiental por APP_SECRET\/entorno; exit=0; duration=0.065s; output=[BOOTSTRAP] APP_SECRET inseguro o vacío en producción.\nConfiguración insegura: APP_SECRET requerido en producción.",
+            "timestamp": "2026-02-21T21:49:48+00:00"
+        }
+    ]
+}
