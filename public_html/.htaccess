@@ -1,0 +1,17 @@
+Options -Indexes
+
+RewriteEngine On
+RewriteBase /
+
+# Bloquear acceso a archivos sensibles
+<FilesMatch "(?i)^(\.env|composer\.(json|lock)|\.git|phpunit\.xml|\.htaccess)$">
+    Require all denied
+</FilesMatch>
+
+# Bloquear rutas sensibles comunes
+RewriteRule ^(\.env|\.git|config/|logs/|vendor/|database/|cron/).* - [F,L,NC]
+
+# Front controller
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

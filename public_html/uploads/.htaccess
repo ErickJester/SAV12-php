@@ -1,0 +1,11 @@
+Options -Indexes
+
+# Bloquear ejecución de scripts en uploads
+<FilesMatch "(?i)\.(php|phtml|php3|php4|php5|phar|pl|py|cgi|asp|aspx|jsp|sh)$">
+    Require all denied
+</FilesMatch>
+
+# Permitir acceso a archivos estáticos comunes
+<FilesMatch "(?i)\.(jpg|jpeg|png|gif|webp|pdf|txt)$">
+    Require all granted
+</FilesMatch>
