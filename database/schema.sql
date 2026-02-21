@@ -86,7 +86,13 @@ CREATE TABLE IF NOT EXISTS tickets (
     INDEX idx_creado_por (creado_por_id),
     INDEX idx_asignado_a (asignado_a_id),
     INDEX idx_estado (estado),
+    INDEX idx_prioridad (prioridad),
+    INDEX idx_categoria_id (categoria_id),
+    INDEX idx_ubicacion_id (ubicacion_id),
     INDEX idx_fecha_creacion (fecha_creacion),
+    INDEX idx_fecha_actualizacion (fecha_actualizacion),
+    INDEX idx_fecha_resolucion (fecha_resolucion),
+    INDEX idx_fecha_cierre (fecha_cierre),
     INDEX idx_sla_politica (sla_politica_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -127,8 +133,8 @@ CREATE TABLE IF NOT EXISTS historial_acciones (
     INDEX idx_asignado_nuevo (asignado_nuevo_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Insertar categorías de ejemplo
-INSERT INTO categorias (nombre, descripcion, activo) VALUES 
+-- Datos base de catálogos para entorno vacío (idempotente)
+INSERT INTO categorias (nombre, descripcion, activo) VALUES
 ('Hardware', 'Problemas relacionados con equipo físico', true),
 ('Software', 'Problemas con aplicaciones y sistemas operativos', true),
 ('Red', 'Problemas de conectividad y red', true),
@@ -136,30 +142,84 @@ INSERT INTO categorias (nombre, descripcion, activo) VALUES
 ('Audio/Video', 'Problemas con proyectores, audio y video', true),
 ('Acceso', 'Problemas de acceso a sistemas y cuentas', true),
 ('Otro', 'Otros problemas no categorizados', true)
-ON DUPLICATE KEY UPDATE nombre=nombre;
+ON DUPLICATE KEY UPDATE
+    descripcion = VALUES(descripcion),
+    activo = VALUES(activo);
 
--- Insertar ubicaciones de ejemplo
-INSERT INTO ubicaciones (edificio, piso, salon, activo) VALUES 
-('Edificio Central', 'Planta Baja', 'Sala 101', true),
-('Edificio Central', 'Planta Baja', 'Sala 102', true),
-('Edificio Central', 'Primer Piso', 'Sala 201', true),
-('Edificio Central', 'Primer Piso', 'Sala 202', true),
-('Edificio Central', 'Segundo Piso', 'Sala 301', true),
-('Edificio Central', 'Segundo Piso', 'Sala 302', true),
-('Edificio Norte', 'Planta Baja', 'Laboratorio 1', true),
-('Edificio Norte', 'Planta Baja', 'Laboratorio 2', true),
-('Edificio Norte', 'Primer Piso', 'Aula Magna', true),
-('Edificio Sur', 'Planta Baja', 'Biblioteca', true),
-('Edificio Sur', 'Primer Piso', 'Sala de Profesores', true),
-('Edificio Oeste', 'Planta Baja', 'Cafetería', true),
-('Edificio Oeste', 'Primer Piso', 'Auditorio', true);
+INSERT INTO ubicaciones (edificio, piso, salon, activo)
+SELECT 'Edificio Central', 'Planta Baja', 'Sala 101', true
+WHERE NOT EXISTS (
+    SELECT 1 FROM ubicaciones WHERE edificio = 'Edificio Central' AND piso = 'Planta Baja' AND salon = 'Sala 101'
+);
+INSERT INTO ubicaciones (edificio, piso, salon, activo)
+SELECT 'Edificio Central', 'Planta Baja', 'Sala 102', true
+WHERE NOT EXISTS (
+    SELECT 1 FROM ubicaciones WHERE edificio = 'Edificio Central' AND piso = 'Planta Baja' AND salon = 'Sala 102'
+);
+INSERT INTO ubicaciones (edificio, piso, salon, activo)
+SELECT 'Edificio Central', 'Primer Piso', 'Sala 201', true
+WHERE NOT EXISTS (
+    SELECT 1 FROM ubicaciones WHERE edificio = 'Edificio Central' AND piso = 'Primer Piso' AND salon = 'Sala 201'
+);
+INSERT INTO ubicaciones (edificio, piso, salon, activo)
+SELECT 'Edificio Central', 'Primer Piso', 'Sala 202', true
+WHERE NOT EXISTS (
+    SELECT 1 FROM ubicaciones WHERE edificio = 'Edificio Central' AND piso = 'Primer Piso' AND salon = 'Sala 202'
+);
+INSERT INTO ubicaciones (edificio, piso, salon, activo)
+SELECT 'Edificio Central', 'Segundo Piso', 'Sala 301', true
+WHERE NOT EXISTS (
+    SELECT 1 FROM ubicaciones WHERE edificio = 'Edificio Central' AND piso = 'Segundo Piso' AND salon = 'Sala 301'
+);
+INSERT INTO ubicaciones (edificio, piso, salon, activo)
+SELECT 'Edificio Central', 'Segundo Piso', 'Sala 302', true
+WHERE NOT EXISTS (
+    SELECT 1 FROM ubicaciones WHERE edificio = 'Edificio Central' AND piso = 'Segundo Piso' AND salon = 'Sala 302'
+);
+INSERT INTO ubicaciones (edificio, piso, salon, activo)
+SELECT 'Edificio Norte', 'Planta Baja', 'Laboratorio 1', true
+WHERE NOT EXISTS (
+    SELECT 1 FROM ubicaciones WHERE edificio = 'Edificio Norte' AND piso = 'Planta Baja' AND salon = 'Laboratorio 1'
+);
+INSERT INTO ubicaciones (edificio, piso, salon, activo)
+SELECT 'Edificio Norte', 'Planta Baja', 'Laboratorio 2', true
+WHERE NOT EXISTS (
+    SELECT 1 FROM ubicaciones WHERE edificio = 'Edificio Norte' AND piso = 'Planta Baja' AND salon = 'Laboratorio 2'
+);
+INSERT INTO ubicaciones (edificio, piso, salon, activo)
+SELECT 'Edificio Norte', 'Primer Piso', 'Aula Magna', true
+WHERE NOT EXISTS (
+    SELECT 1 FROM ubicaciones WHERE edificio = 'Edificio Norte' AND piso = 'Primer Piso' AND salon = 'Aula Magna'
+);
+INSERT INTO ubicaciones (edificio, piso, salon, activo)
+SELECT 'Edificio Sur', 'Planta Baja', 'Biblioteca', true
+WHERE NOT EXISTS (
+    SELECT 1 FROM ubicaciones WHERE edificio = 'Edificio Sur' AND piso = 'Planta Baja' AND salon = 'Biblioteca'
+);
+INSERT INTO ubicaciones (edificio, piso, salon, activo)
+SELECT 'Edificio Sur', 'Primer Piso', 'Sala de Profesores', true
+WHERE NOT EXISTS (
+    SELECT 1 FROM ubicaciones WHERE edificio = 'Edificio Sur' AND piso = 'Primer Piso' AND salon = 'Sala de Profesores'
+);
+INSERT INTO ubicaciones (edificio, piso, salon, activo)
+SELECT 'Edificio Oeste', 'Planta Baja', 'Cafetería', true
+WHERE NOT EXISTS (
+    SELECT 1 FROM ubicaciones WHERE edificio = 'Edificio Oeste' AND piso = 'Planta Baja' AND salon = 'Cafetería'
+);
+INSERT INTO ubicaciones (edificio, piso, salon, activo)
+SELECT 'Edificio Oeste', 'Primer Piso', 'Auditorio', true
+WHERE NOT EXISTS (
+    SELECT 1 FROM ubicaciones WHERE edificio = 'Edificio Oeste' AND piso = 'Primer Piso' AND salon = 'Auditorio'
+);
 
--- Insertar políticas SLA de ejemplo
 INSERT INTO sla_politicas (rol_solicitante, sla_primera_respuesta_min, sla_resolucion_min, activo) VALUES
 ('ALUMNO', 240, 1440, true),
 ('DOCENTE', 180, 1200, true),
 ('ADMINISTRATIVO', 180, 1200, true)
-ON DUPLICATE KEY UPDATE rol_solicitante=rol_solicitante;
+ON DUPLICATE KEY UPDATE
+    sla_primera_respuesta_min = VALUES(sla_primera_respuesta_min),
+    sla_resolucion_min = VALUES(sla_resolucion_min),
+    activo = VALUES(activo);
 
 -- Verificar las tablas creadas
 SHOW TABLES;
