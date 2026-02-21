@@ -1,32 +1,54 @@
 <?php
 /**
- * CRON: Auto-escalar tickets sin asignar después de X minutos
- * Ejecutar cada 15 min: */15 * * * * php /home/u123/sav12-php/cron/auto_escalate.php
+ * CRON: Auto-escalar tickets sin asignar después de 60 minutos.
  */
 
-require_once dirname(__DIR__) . '/config/app.php';
-require_once APP_PATH . '/Helpers/Database.php';
+declare(strict_types=1);
 
-$ahora = date('Y-m-d H:i:s');
+require_once __DIR__ . '/_bootstrap.php';
 
-// Tickets sin asignar por más de 60 minutos
-$tickets = Database::fetchAll(
-    "SELECT t.id, t.titulo, t.fecha_creacion, t.prioridad
-     FROM tickets t
-     WHERE t.asignado_a_id IS NULL
-       AND t.estado IN ('ABIERTO','REABIERTO')
-       AND TIMESTAMPDIFF(MINUTE, t.fecha_creacion, NOW()) > 60"
-);
+$jobName = 'auto_escalate';
 
-$escalados = 0;
-foreach ($tickets as $ticket) {
-    // Subir prioridad si aún no es ALTA/URGENTE
-    if (!in_array($ticket['prioridad'], ['ALTA', 'URGENTE'])) {
-        $nuevaPrioridad = $ticket['prioridad'] === 'BAJA' ? 'MEDIA' : 'ALTA';
-        Database::execute("UPDATE tickets SET prioridad = ? WHERE id = ?", [$nuevaPrioridad, $ticket['id']]);
+try {
+    cron_init($jobName);
+
+    $tickets = Database::fetchAll(
+        "SELECT t.id, t.prioridad
+         FROM tickets t
+         WHERE t.asignado_a_id IS NULL
+           AND t.estado IN ('ABIERTO','REABIERTO')
+           AND TIMESTAMPDIFF(MINUTE, t.fecha_creacion, NOW()) > 60"
+    );
+
+    $escalados = 0;
+    $skipped = 0;
+
+    foreach ($tickets as $ticket) {
+        $prioridadActual = (string) $ticket['prioridad'];
+        if (in_array($prioridadActual, ['ALTA', 'URGENTE'], true)) {
+            $skipped++;
+            continue;
+        }
+
+        $nuevaPrioridad = $prioridadActual === 'BAJA' ? 'MEDIA' : 'ALTA';
+        Database::execute('UPDATE tickets SET prioridad = ? WHERE id = ?', [$nuevaPrioridad, (int) $ticket['id']]);
         $escalados++;
-        error_log("[ESCALATION] Ticket #{$ticket['id']} escalado a $nuevaPrioridad");
-    }
-}
 
-echo date('Y-m-d H:i:s') . " - Escalation: $escalados tickets escalated\n";
+        cron_log($jobName, 'INFO', 'Ticket escalado', [
+            'ticket_id' => (int) $ticket['id'],
+            'from' => $prioridadActual,
+            'to' => $nuevaPrioridad,
+        ]);
+    }
+
+    cron_log($jobName, 'INFO', 'Ejecución finalizada', [
+        'status' => 'ok',
+        'candidatos' => count($tickets),
+        'escalados' => $escalados,
+        'skipped' => $skipped,
+    ]);
+    exit(0);
+} catch (Throwable $e) {
+    cron_handle_exception($jobName, $e);
+    exit(1);
+}
