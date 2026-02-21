@@ -1,0 +1,349 @@
+{
+  "source_files": [
+    "public_html/index.php"
+  ],
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/",
+      "controller": "AuthController",
+      "action": "loginForm",
+      "middleware_or_role": "PUBLICO_O_AUTENTICADO",
+      "source_file": "public_html/index.php",
+      "line": 27
+    },
+    {
+      "method": "GET",
+      "path": "/login",
+      "controller": "AuthController",
+      "action": "loginForm",
+      "middleware_or_role": "PUBLICO_O_AUTENTICADO",
+      "source_file": "public_html/index.php",
+      "line": 28
+    },
+    {
+      "method": "POST",
+      "path": "/login",
+      "controller": "AuthController",
+      "action": "login",
+      "middleware_or_role": "PUBLICO_O_AUTENTICADO",
+      "source_file": "public_html/index.php",
+      "line": 29
+    },
+    {
+      "method": "GET",
+      "path": "/registro",
+      "controller": "AuthController",
+      "action": "registroForm",
+      "middleware_or_role": "PUBLICO_O_AUTENTICADO",
+      "source_file": "public_html/index.php",
+      "line": 30
+    },
+    {
+      "method": "POST",
+      "path": "/registro",
+      "controller": "AuthController",
+      "action": "registro",
+      "middleware_or_role": "PUBLICO_O_AUTENTICADO",
+      "source_file": "public_html/index.php",
+      "line": 31
+    },
+    {
+      "method": "GET",
+      "path": "/logout",
+      "controller": "AuthController",
+      "action": "logout",
+      "middleware_or_role": "PUBLICO_O_AUTENTICADO",
+      "source_file": "public_html/index.php",
+      "line": 32
+    },
+    {
+      "method": "GET",
+      "path": "/403",
+      "controller": "AuthController",
+      "action": "forbidden",
+      "middleware_or_role": "PUBLICO_O_AUTENTICADO",
+      "source_file": "public_html/index.php",
+      "line": 33
+    },
+    {
+      "method": "GET",
+      "path": "/usuario/panel",
+      "controller": "UsuarioController",
+      "action": "panel",
+      "middleware_or_role": "USUARIO_AUTENTICADO",
+      "source_file": "public_html/index.php",
+      "line": 38
+    },
+    {
+      "method": "GET",
+      "path": "/usuario/crear-ticket",
+      "controller": "UsuarioController",
+      "action": "crearTicketForm",
+      "middleware_or_role": "USUARIO_AUTENTICADO",
+      "source_file": "public_html/index.php",
+      "line": 39
+    },
+    {
+      "method": "POST",
+      "path": "/usuario/crear-ticket",
+      "controller": "UsuarioController",
+      "action": "crearTicket",
+      "middleware_or_role": "USUARIO_AUTENTICADO",
+      "source_file": "public_html/index.php",
+      "line": 40
+    },
+    {
+      "method": "GET",
+      "path": "/usuario/mis-tickets",
+      "controller": "UsuarioController",
+      "action": "misTickets",
+      "middleware_or_role": "USUARIO_AUTENTICADO",
+      "source_file": "public_html/index.php",
+      "line": 41
+    },
+    {
+      "method": "GET",
+      "path": "/usuario/ticket/{id}",
+      "controller": "UsuarioController",
+      "action": "detalleTicket",
+      "middleware_or_role": "USUARIO_AUTENTICADO",
+      "source_file": "public_html/index.php",
+      "line": 42
+    },
+    {
+      "method": "POST",
+      "path": "/usuario/ticket/{id}/comentar",
+      "controller": "UsuarioController",
+      "action": "comentar",
+      "middleware_or_role": "USUARIO_AUTENTICADO",
+      "source_file": "public_html/index.php",
+      "line": 43
+    },
+    {
+      "method": "POST",
+      "path": "/usuario/ticket/{id}/reabrir",
+      "controller": "UsuarioController",
+      "action": "reabrir",
+      "middleware_or_role": "USUARIO_AUTENTICADO",
+      "source_file": "public_html/index.php",
+      "line": 44
+    },
+    {
+      "method": "GET",
+      "path": "/tecnico/panel",
+      "controller": "TecnicoController",
+      "action": "panel",
+      "middleware_or_role": "TECNICO",
+      "source_file": "public_html/index.php",
+      "line": 49
+    },
+    {
+      "method": "GET",
+      "path": "/tecnico/mis-tickets",
+      "controller": "TecnicoController",
+      "action": "misTickets",
+      "middleware_or_role": "TECNICO",
+      "source_file": "public_html/index.php",
+      "line": 50
+    },
+    {
+      "method": "GET",
+      "path": "/tecnico/ticket/{id}",
+      "controller": "TecnicoController",
+      "action": "detalleTicket",
+      "middleware_or_role": "TECNICO",
+      "source_file": "public_html/index.php",
+      "line": 51
+    },
+    {
+      "method": "POST",
+      "path": "/tecnico/ticket/{id}/cambiar-estado",
+      "controller": "TecnicoController",
+      "action": "cambiarEstado",
+      "middleware_or_role": "TECNICO",
+      "source_file": "public_html/index.php",
+      "line": 52
+    },
+    {
+      "method": "POST",
+      "path": "/tecnico/ticket/{id}/comentar",
+      "controller": "TecnicoController",
+      "action": "comentar",
+      "middleware_or_role": "TECNICO",
+      "source_file": "public_html/index.php",
+      "line": 53
+    },
+    {
+      "method": "POST",
+      "path": "/tecnico/ticket/{id}/reabrir",
+      "controller": "TecnicoController",
+      "action": "reabrir",
+      "middleware_or_role": "TECNICO",
+      "source_file": "public_html/index.php",
+      "line": 54
+    },
+    {
+      "method": "POST",
+      "path": "/tecnico/ticket/{id}/asignar",
+      "controller": "TecnicoController",
+      "action": "asignarme",
+      "middleware_or_role": "TECNICO",
+      "source_file": "public_html/index.php",
+      "line": 55
+    },
+    {
+      "method": "GET",
+      "path": "/admin/panel",
+      "controller": "AdministradorController",
+      "action": "panel",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 60
+    },
+    {
+      "method": "GET",
+      "path": "/admin/usuarios",
+      "controller": "AdministradorController",
+      "action": "usuarios",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 61
+    },
+    {
+      "method": "POST",
+      "path": "/admin/usuarios/{id}/cambiar-estado",
+      "controller": "AdministradorController",
+      "action": "cambiarEstadoUsuario",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 62
+    },
+    {
+      "method": "POST",
+      "path": "/admin/usuarios/{id}/cambiar-rol",
+      "controller": "AdministradorController",
+      "action": "cambiarRolUsuario",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 63
+    },
+    {
+      "method": "GET",
+      "path": "/admin/categorias",
+      "controller": "AdministradorController",
+      "action": "categorias",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 65
+    },
+    {
+      "method": "POST",
+      "path": "/admin/categorias/crear",
+      "controller": "AdministradorController",
+      "action": "crearCategoria",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 66
+    },
+    {
+      "method": "POST",
+      "path": "/admin/categorias/{id}/desactivar",
+      "controller": "AdministradorController",
+      "action": "desactivarCategoria",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 67
+    },
+    {
+      "method": "GET",
+      "path": "/admin/ubicaciones",
+      "controller": "AdministradorController",
+      "action": "ubicaciones",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 69
+    },
+    {
+      "method": "POST",
+      "path": "/admin/ubicaciones/crear",
+      "controller": "AdministradorController",
+      "action": "crearUbicacion",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 70
+    },
+    {
+      "method": "POST",
+      "path": "/admin/ubicaciones/{id}/desactivar",
+      "controller": "AdministradorController",
+      "action": "desactivarUbicacion",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 71
+    },
+    {
+      "method": "GET",
+      "path": "/admin/tickets",
+      "controller": "AdministradorController",
+      "action": "tickets",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 73
+    },
+    {
+      "method": "GET",
+      "path": "/admin/ticket/{id}",
+      "controller": "AdministradorController",
+      "action": "detalleTicket",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 74
+    },
+    {
+      "method": "POST",
+      "path": "/admin/ticket/{id}/comentar",
+      "controller": "AdministradorController",
+      "action": "comentarTicket",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 75
+    },
+    {
+      "method": "POST",
+      "path": "/admin/tickets/{id}/asignar-tecnico",
+      "controller": "AdministradorController",
+      "action": "asignarTecnico",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 76
+    },
+    {
+      "method": "POST",
+      "path": "/admin/tickets/{id}/asignarme",
+      "controller": "AdministradorController",
+      "action": "asignarmeTicket",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 77
+    },
+    {
+      "method": "POST",
+      "path": "/admin/ticket/{id}/reabrir",
+      "controller": "AdministradorController",
+      "action": "reabrirTicket",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 78
+    },
+    {
+      "method": "GET",
+      "path": "/admin/reportes",
+      "controller": "AdministradorController",
+      "action": "reportes",
+      "middleware_or_role": "ADMIN",
+      "source_file": "public_html/index.php",
+      "line": 80
+    }
+  ]
+}

@@ -1,0 +1,473 @@
+{
+  "tables": [
+    {
+      "name": "usuarios",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "raw": "id BIGINT PRIMARY KEY AUTO_INCREMENT"
+        },
+        {
+          "name": "nombre",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "default": null,
+          "raw": "nombre VARCHAR(255) NOT NULL"
+        },
+        {
+          "name": "correo",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "default": null,
+          "raw": "correo VARCHAR(255) NOT NULL UNIQUE"
+        },
+        {
+          "name": "password_hash",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "default": null,
+          "raw": "password_hash VARCHAR(255) NOT NULL"
+        },
+        {
+          "name": "rol",
+          "type": "VARCHAR(50)",
+          "nullable": false,
+          "default": null,
+          "raw": "rol VARCHAR(50) NOT NULL"
+        },
+        {
+          "name": "boleta",
+          "type": "VARCHAR(50)",
+          "nullable": true,
+          "default": null,
+          "raw": "boleta VARCHAR(50)"
+        },
+        {
+          "name": "id_trabajador",
+          "type": "VARCHAR(50)",
+          "nullable": true,
+          "default": null,
+          "raw": "id_trabajador VARCHAR(50)"
+        },
+        {
+          "name": "activo",
+          "type": "BOOLEAN",
+          "nullable": true,
+          "default": "TRUE",
+          "raw": "activo BOOLEAN DEFAULT TRUE"
+        }
+      ],
+      "source_file": "database/schema.sql",
+      "line": 9
+    },
+    {
+      "name": "categorias",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "raw": "id BIGINT PRIMARY KEY AUTO_INCREMENT"
+        },
+        {
+          "name": "nombre",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "default": null,
+          "raw": "nombre VARCHAR(255) NOT NULL UNIQUE"
+        },
+        {
+          "name": "descripcion",
+          "type": "TEXT",
+          "nullable": true,
+          "default": null,
+          "raw": "descripcion TEXT"
+        },
+        {
+          "name": "activo",
+          "type": "BOOLEAN",
+          "nullable": true,
+          "default": "TRUE",
+          "raw": "activo BOOLEAN DEFAULT TRUE"
+        }
+      ],
+      "source_file": "database/schema.sql",
+      "line": 26
+    },
+    {
+      "name": "ubicaciones",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "raw": "id BIGINT PRIMARY KEY AUTO_INCREMENT"
+        },
+        {
+          "name": "edificio",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "default": null,
+          "raw": "edificio VARCHAR(255) NOT NULL"
+        },
+        {
+          "name": "piso",
+          "type": "VARCHAR(100)",
+          "nullable": true,
+          "default": null,
+          "raw": "piso VARCHAR(100)"
+        },
+        {
+          "name": "salon",
+          "type": "VARCHAR(100)",
+          "nullable": true,
+          "default": null,
+          "raw": "salon VARCHAR(100)"
+        },
+        {
+          "name": "activo",
+          "type": "BOOLEAN",
+          "nullable": true,
+          "default": "TRUE",
+          "raw": "activo BOOLEAN DEFAULT TRUE"
+        }
+      ],
+      "source_file": "database/schema.sql",
+      "line": 35
+    },
+    {
+      "name": "sla_politicas",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "raw": "id BIGINT PRIMARY KEY AUTO_INCREMENT"
+        },
+        {
+          "name": "rol_solicitante",
+          "type": "VARCHAR(50)",
+          "nullable": false,
+          "default": null,
+          "raw": "rol_solicitante VARCHAR(50) NOT NULL"
+        },
+        {
+          "name": "sla_primera_respuesta_min",
+          "type": "INT",
+          "nullable": false,
+          "default": null,
+          "raw": "sla_primera_respuesta_min INT NOT NULL"
+        },
+        {
+          "name": "sla_resolucion_min",
+          "type": "INT",
+          "nullable": false,
+          "default": null,
+          "raw": "sla_resolucion_min INT NOT NULL"
+        },
+        {
+          "name": "activo",
+          "type": "BOOLEAN",
+          "nullable": true,
+          "default": "TRUE",
+          "raw": "activo BOOLEAN DEFAULT TRUE"
+        }
+      ],
+      "source_file": "database/schema.sql",
+      "line": 46
+    },
+    {
+      "name": "tickets",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "raw": "id BIGINT PRIMARY KEY AUTO_INCREMENT"
+        },
+        {
+          "name": "titulo",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "default": null,
+          "raw": "titulo VARCHAR(255) NOT NULL"
+        },
+        {
+          "name": "descripcion",
+          "type": "TEXT",
+          "nullable": true,
+          "default": null,
+          "raw": "descripcion TEXT"
+        },
+        {
+          "name": "estado",
+          "type": "ENUM('ABIERTO',",
+          "nullable": false,
+          "default": "'ABIERTO'",
+          "raw": "estado ENUM('ABIERTO', 'REABIERTO', 'EN_PROCESO', 'EN_ESPERA', 'RESUELTO', 'CERRADO', 'CANCELADO') NOT NULL DEFAULT 'ABIERTO'"
+        },
+        {
+          "name": "prioridad",
+          "type": "VARCHAR(50)",
+          "nullable": true,
+          "default": "'MEDIA'",
+          "raw": "prioridad VARCHAR(50) DEFAULT 'MEDIA'"
+        },
+        {
+          "name": "creado_por_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "raw": "creado_por_id BIGINT NOT NULL"
+        },
+        {
+          "name": "asignado_a_id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "raw": "asignado_a_id BIGINT"
+        },
+        {
+          "name": "categoria_id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "raw": "categoria_id BIGINT"
+        },
+        {
+          "name": "ubicacion_id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "raw": "ubicacion_id BIGINT"
+        },
+        {
+          "name": "sla_politica_id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "raw": "sla_politica_id BIGINT"
+        },
+        {
+          "name": "fecha_creacion",
+          "type": "DATETIME",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "raw": "fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "fecha_actualizacion",
+          "type": "DATETIME",
+          "nullable": true,
+          "default": null,
+          "raw": "fecha_actualizacion DATETIME"
+        },
+        {
+          "name": "fecha_primera_respuesta",
+          "type": "DATETIME",
+          "nullable": true,
+          "default": null,
+          "raw": "fecha_primera_respuesta DATETIME"
+        },
+        {
+          "name": "fecha_resolucion",
+          "type": "DATETIME",
+          "nullable": true,
+          "default": null,
+          "raw": "fecha_resolucion DATETIME"
+        },
+        {
+          "name": "fecha_cierre",
+          "type": "DATETIME",
+          "nullable": true,
+          "default": null,
+          "raw": "fecha_cierre DATETIME"
+        },
+        {
+          "name": "evidencia_problema",
+          "type": "VARCHAR(500)",
+          "nullable": true,
+          "default": null,
+          "raw": "evidencia_problema VARCHAR(500)"
+        },
+        {
+          "name": "evidencia_resolucion",
+          "type": "VARCHAR(500)",
+          "nullable": true,
+          "default": null,
+          "raw": "evidencia_resolucion VARCHAR(500)"
+        },
+        {
+          "name": "tiempo_primera_respuesta_seg",
+          "type": "INT",
+          "nullable": true,
+          "default": null,
+          "raw": "tiempo_primera_respuesta_seg INT"
+        },
+        {
+          "name": "tiempo_resolucion_seg",
+          "type": "INT",
+          "nullable": true,
+          "default": null,
+          "raw": "tiempo_resolucion_seg INT"
+        },
+        {
+          "name": "tiempo_espera_seg",
+          "type": "INT",
+          "nullable": false,
+          "default": "0",
+          "raw": "tiempo_espera_seg INT NOT NULL DEFAULT 0"
+        },
+        {
+          "name": "espera_desde",
+          "type": "DATETIME",
+          "nullable": true,
+          "default": null,
+          "raw": "espera_desde DATETIME"
+        },
+        {
+          "name": "reabierto_count",
+          "type": "INT",
+          "nullable": false,
+          "default": "0",
+          "raw": "reabierto_count INT NOT NULL DEFAULT 0"
+        }
+      ],
+      "source_file": "database/schema.sql",
+      "line": 58
+    },
+    {
+      "name": "comentarios",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "raw": "id BIGINT PRIMARY KEY AUTO_INCREMENT"
+        },
+        {
+          "name": "ticket_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "raw": "ticket_id BIGINT NOT NULL"
+        },
+        {
+          "name": "usuario_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "raw": "usuario_id BIGINT NOT NULL"
+        },
+        {
+          "name": "contenido",
+          "type": "TEXT",
+          "nullable": false,
+          "default": null,
+          "raw": "contenido TEXT NOT NULL"
+        },
+        {
+          "name": "fecha_creacion",
+          "type": "DATETIME",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "raw": "fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"
+        }
+      ],
+      "source_file": "database/schema.sql",
+      "line": 94
+    },
+    {
+      "name": "historial_acciones",
+      "columns": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "raw": "id BIGINT PRIMARY KEY AUTO_INCREMENT"
+        },
+        {
+          "name": "ticket_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "raw": "ticket_id BIGINT NOT NULL"
+        },
+        {
+          "name": "usuario_id",
+          "type": "BIGINT",
+          "nullable": false,
+          "default": null,
+          "raw": "usuario_id BIGINT NOT NULL"
+        },
+        {
+          "name": "tipo",
+          "type": "VARCHAR(50)",
+          "nullable": false,
+          "default": null,
+          "raw": "tipo VARCHAR(50) NOT NULL"
+        },
+        {
+          "name": "accion",
+          "type": "VARCHAR(255)",
+          "nullable": false,
+          "default": null,
+          "raw": "accion VARCHAR(255) NOT NULL"
+        },
+        {
+          "name": "estado_anterior",
+          "type": "VARCHAR(50)",
+          "nullable": true,
+          "default": null,
+          "raw": "estado_anterior VARCHAR(50)"
+        },
+        {
+          "name": "estado_nuevo",
+          "type": "VARCHAR(50)",
+          "nullable": true,
+          "default": null,
+          "raw": "estado_nuevo VARCHAR(50)"
+        },
+        {
+          "name": "asignado_anterior_id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "raw": "asignado_anterior_id BIGINT"
+        },
+        {
+          "name": "asignado_nuevo_id",
+          "type": "BIGINT",
+          "nullable": true,
+          "default": null,
+          "raw": "asignado_nuevo_id BIGINT"
+        },
+        {
+          "name": "fecha_accion",
+          "type": "DATETIME",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "raw": "fecha_accion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "detalles",
+          "type": "TEXT",
+          "nullable": true,
+          "default": null,
+          "raw": "detalles TEXT"
+        }
+      ],
+      "source_file": "database/schema.sql",
+      "line": 107
+    }
+  ]
+}

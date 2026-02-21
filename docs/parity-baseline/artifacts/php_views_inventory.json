@@ -1,0 +1,112 @@
+{
+  "views": [
+    {
+      "path": "views/admin/categorias.php",
+      "module": "admin",
+      "name": "categorias",
+      "type": "view"
+    },
+    {
+      "path": "views/admin/detalle-ticket.php",
+      "module": "admin",
+      "name": "detalle-ticket",
+      "type": "view"
+    },
+    {
+      "path": "views/admin/panel.php",
+      "module": "admin",
+      "name": "panel",
+      "type": "view"
+    },
+    {
+      "path": "views/admin/reportes.php",
+      "module": "admin",
+      "name": "reportes",
+      "type": "view"
+    },
+    {
+      "path": "views/admin/tickets.php",
+      "module": "admin",
+      "name": "tickets",
+      "type": "view"
+    },
+    {
+      "path": "views/admin/ubicaciones.php",
+      "module": "admin",
+      "name": "ubicaciones",
+      "type": "view"
+    },
+    {
+      "path": "views/admin/usuarios.php",
+      "module": "admin",
+      "name": "usuarios",
+      "type": "view"
+    },
+    {
+      "path": "views/auth/403.php",
+      "module": "auth",
+      "name": "403",
+      "type": "view"
+    },
+    {
+      "path": "views/auth/login.php",
+      "module": "auth",
+      "name": "login",
+      "type": "view"
+    },
+    {
+      "path": "views/auth/registro.php",
+      "module": "auth",
+      "name": "registro",
+      "type": "view"
+    },
+    {
+      "path": "views/layouts/main.php",
+      "module": "layouts",
+      "name": "main",
+      "type": "layout"
+    },
+    {
+      "path": "views/tecnico/detalle-ticket.php",
+      "module": "tecnico",
+      "name": "detalle-ticket",
+      "type": "view"
+    },
+    {
+      "path": "views/tecnico/mis-tickets.php",
+      "module": "tecnico",
+      "name": "mis-tickets",
+      "type": "view"
+    },
+    {
+      "path": "views/tecnico/panel.php",
+      "module": "tecnico",
+      "name": "panel",
+      "type": "view"
+    },
+    {
+      "path": "views/usuario/crear-ticket.php",
+      "module": "usuario",
+      "name": "crear-ticket",
+      "type": "view"
+    },
+    {
+      "path": "views/usuario/detalle-ticket.php",
+      "module": "usuario",
+      "name": "detalle-ticket",
+      "type": "view"
+    },
+    {
+      "path": "views/usuario/mis-tickets.php",
+      "module": "usuario",
+      "name": "mis-tickets",
+      "type": "view"
+    },
+    {
+      "path": "views/usuario/panel.php",
+      "module": "usuario",
+      "name": "panel",
+      "type": "view"
+    }
+  ]
+}
