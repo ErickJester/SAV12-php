@@ -9,6 +9,7 @@ require_once APP_PATH . '/Models/HistorialAccion.php';
 require_once APP_PATH . '/Services/TicketService.php';
 require_once APP_PATH . '/Services/ComentarioService.php';
 require_once APP_PATH . '/Services/ReporteService.php';
+require_once APP_PATH . '/Services/ExportService.php';
 
 class AdministradorController {
 
@@ -172,31 +173,121 @@ class AdministradorController {
         $usuario = AuthMiddleware::currentUser();
 
         $periodo = $_GET['periodo'] ?? 'semanal';
-        $ahora = date('Y-m-d H:i:s');
+        [$desde, $hasta] = $this->resolveRangoReporte($periodo, $_GET['desde'] ?? null, $_GET['hasta'] ?? null);
 
-        switch ($periodo) {
-            case 'mensual':    $desde = date('Y-m-d H:i:s', strtotime('-1 month')); break;
-            case 'trimestral': $desde = date('Y-m-d H:i:s', strtotime('-3 months')); break;
-            case 'anual':      $desde = date('Y-m-d H:i:s', strtotime('-1 year')); break;
-            case 'custom':
-                $desde = ($_GET['desde'] ?? '') ? $_GET['desde'] . ' 00:00:00' : date('Y-m-d H:i:s', strtotime('-1 week'));
-                $ahora = ($_GET['hasta'] ?? '') ? $_GET['hasta'] . ' 23:59:59' : $ahora;
-                break;
-            default: $desde = date('Y-m-d H:i:s', strtotime('-1 week')); break;
+        try {
+            $payload = ReporteService::generarPayloadReporteAdmin($desde, $hasta);
+        } catch (Throwable $e) {
+            error_log('[AdministradorController::reportes] ' . $e->getMessage());
+            Session::flash('error', 'No fue posible cargar el reporte.');
+            $payload = [];
         }
 
-        $kpis = ReporteService::kpisEjecutivos($desde, $ahora);
-        $reporteSLA = ReporteService::reporteSLA($desde, $ahora);
-        $reportePorEstado = ReporteService::reportePorEstado($desde, $ahora);
-        $reporteGeneral = ReporteService::reporteGeneral($desde, $ahora);
-        $topCategorias = ReporteService::topCategorias($desde, $ahora);
-        $analisisTiempos = ReporteService::analisisTiempos($desde, $ahora);
-        $desempenoTecnicos = ReporteService::desempenoTecnicos($desde, $ahora);
-        $analisisPorPrioridad = ReporteService::analisisPorPrioridad($desde, $ahora);
-        $analisisPorUbicaciones = ReporteService::analisisPorUbicaciones($desde, $ahora);
-        $alertas = ReporteService::alertas($desde, $ahora);
+        $kpis = $payload['kpis'] ?? [];
+        $reporteSLA = $payload['reporteSLA'] ?? [];
+        $reportePorEstado = ReporteService::reportePorEstado($desde, $hasta);
+        $reporteGeneral = ReporteService::reporteGeneral($desde, $hasta);
+        $topCategorias = $payload['topCategorias'] ?? [];
+        $analisisTiempos = $payload['analisisTiempos'] ?? [];
+        $desempenoTecnicos = $payload['desempenoTecnicos'] ?? [];
+        $analisisPorPrioridad = $payload['analisisPorPrioridad'] ?? [];
+        $analisisPorUbicaciones = $payload['analisisPorUbicaciones'] ?? [];
+        $alertas = $payload['alertas'] ?? [];
+        $ticketsProblematicos = $payload['ticketsProblematicos'] ?? [];
 
         $periodoSeleccionado = $periodo;
         include VIEW_PATH . '/admin/reportes.php';
+    }
+
+    public function exportarReportesCsv(): void {
+        AuthMiddleware::requireAdmin();
+        [$desde, $hasta] = $this->resolveRangoReporte('custom', $_GET['desde'] ?? null, $_GET['hasta'] ?? null);
+
+        try {
+            $payload = ReporteService::generarPayloadReporteAdmin($desde, $hasta);
+            $export = ExportService::exportarReporteCsv($payload, []);
+            if (empty($export['ok'])) {
+                throw new RuntimeException('CSV export no disponible');
+            }
+
+            header('Content-Type: ' . ($export['mime'] ?? 'text/csv; charset=UTF-8'));
+            header('Content-Disposition: attachment; filename="' . ($export['filename'] ?? 'reporte.csv') . '"');
+            echo $export['content'] ?? '';
+            exit;
+        } catch (Throwable $e) {
+            error_log('[AdministradorController::exportarReportesCsv] ' . $e->getMessage());
+            Session::flash('error', 'Error al exportar CSV');
+            header('Location: ' . base_url('admin/reportes'));
+            exit;
+        }
+    }
+
+    public function exportarReportesPdf(): void {
+        AuthMiddleware::requireAdmin();
+        [$desde, $hasta] = $this->resolveRangoReporte('custom', $_GET['desde'] ?? null, $_GET['hasta'] ?? null);
+
+        try {
+            $payload = ReporteService::generarPayloadReporteAdmin($desde, $hasta);
+            $export = ExportService::exportarReportePdf($payload, []);
+            if (empty($export['ok'])) {
+                throw new RuntimeException('PDF export no disponible');
+            }
+
+            header('Content-Type: ' . ($export['mime'] ?? 'application/pdf'));
+            header('Content-Disposition: attachment; filename="' . ($export['filename'] ?? 'reporte.pdf') . '"');
+            echo $export['content'] ?? '';
+            exit;
+        } catch (Throwable $e) {
+            error_log('[AdministradorController::exportarReportesPdf] ' . $e->getMessage());
+            Session::flash('error', 'Error al exportar PDF');
+            header('Location: ' . base_url('admin/reportes'));
+            exit;
+        }
+    }
+
+    private function resolveRangoReporte(?string $periodo, ?string $desdeParam, ?string $hastaParam): array {
+        $ahora = date('Y-m-d H:i:s');
+        $periodo = $periodo ?: 'semanal';
+
+        switch ($periodo) {
+            case 'mensual':
+                $desde = date('Y-m-d H:i:s', strtotime('-1 month'));
+                $hasta = $ahora;
+                break;
+            case 'trimestral':
+                $desde = date('Y-m-d H:i:s', strtotime('-3 months'));
+                $hasta = $ahora;
+                break;
+            case 'anual':
+                $desde = date('Y-m-d H:i:s', strtotime('-1 year'));
+                $hasta = $ahora;
+                break;
+            case 'custom':
+                $desde = $this->normalizeFechaInicio($desdeParam) ?? date('Y-m-d H:i:s', strtotime('-1 month'));
+                $hasta = $this->normalizeFechaFin($hastaParam) ?? $ahora;
+                break;
+            default:
+                $desde = date('Y-m-d H:i:s', strtotime('-1 week'));
+                $hasta = $ahora;
+                break;
+        }
+
+        if (strtotime($desde) > strtotime($hasta)) {
+            $desde = date('Y-m-d H:i:s', strtotime('-1 week'));
+            $hasta = $ahora;
+        }
+        return [$desde, $hasta];
+    }
+
+    private function normalizeFechaInicio(?string $value): ?string {
+        if (empty($value)) return null;
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) return null;
+        return $value . ' 00:00:00';
+    }
+
+    private function normalizeFechaFin(?string $value): ?string {
+        if (empty($value)) return null;
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) return null;
+        return $value . ' 23:59:59';
     }
 }
