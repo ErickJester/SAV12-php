@@ -1,0 +1,13 @@
+{
+    "suite": "qa_smoke_http",
+    "started_at": "2026-02-21T21:49:47+00:00",
+    "ended_at": "2026-02-21T21:49:47+00:00",
+    "results": [
+        {
+            "test": "http_base_url",
+            "status": "BLOCKED",
+            "evidence": "No existe QA_BASE_URL ni APP_URL configurado en .env",
+            "timestamp": "2026-02-21T21:49:47+00:00"
+        }
+    ]
+}

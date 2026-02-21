@@ -1,0 +1,76 @@
+{
+    "generated_at": "2026-02-21T21:49:48+00:00",
+    "summary": {
+        "PASS": 4,
+        "FAIL": 0,
+        "BLOCKED": 4
+    },
+    "results": [
+        {
+            "suite": "qa_smoke_http",
+            "status": "DONE",
+            "results": [
+                {
+                    "test": "http_base_url",
+                    "status": "BLOCKED",
+                    "evidence": "No existe QA_BASE_URL ni APP_URL configurado en .env",
+                    "timestamp": "2026-02-21T21:49:47+00:00"
+                }
+            ]
+        },
+        {
+            "suite": "qa_smoke_cron",
+            "status": "DONE",
+            "results": [
+                {
+                    "test": "cron_check_sla_breaches",
+                    "status": "BLOCKED",
+                    "evidence": "Bloqueo ambiental por APP_SECRET\/entorno; exit=0; duration=0.082s; output=[BOOTSTRAP] APP_SECRET inseguro o vacío en producción.\nConfiguración insegura: APP_SECRET requerido en producción.",
+                    "timestamp": "2026-02-21T21:49:47+00:00"
+                },
+                {
+                    "test": "cron_auto_escalate",
+                    "status": "BLOCKED",
+                    "evidence": "Bloqueo ambiental por APP_SECRET\/entorno; exit=0; duration=0.078s; output=[BOOTSTRAP] APP_SECRET inseguro o vacío en producción.\nConfiguración insegura: APP_SECRET requerido en producción.",
+                    "timestamp": "2026-02-21T21:49:47+00:00"
+                },
+                {
+                    "test": "cron_send_reminders",
+                    "status": "BLOCKED",
+                    "evidence": "Bloqueo ambiental por APP_SECRET\/entorno; exit=0; duration=0.065s; output=[BOOTSTRAP] APP_SECRET inseguro o vacío en producción.\nConfiguración insegura: APP_SECRET requerido en producción.",
+                    "timestamp": "2026-02-21T21:49:48+00:00"
+                }
+            ]
+        },
+        {
+            "suite": "qa_smoke_assets",
+            "status": "DONE",
+            "results": [
+                {
+                    "test": "asset_reports_js_exists",
+                    "status": "PASS",
+                    "evidence": "Existe public_html\/assets\/js\/reports.js",
+                    "timestamp": "2026-02-21T21:49:48+00:00"
+                },
+                {
+                    "test": "view_reportes_ref_2ff5fc96484d0b5890248252fe00d933",
+                    "status": "PASS",
+                    "evidence": "Referencia encontrada: base_url('admin\/reportes')",
+                    "timestamp": "2026-02-21T21:49:48+00:00"
+                },
+                {
+                    "test": "view_reportes_ref_a7f8b16a6f087c67f2de22f5717645b4",
+                    "status": "PASS",
+                    "evidence": "Referencia encontrada: base_url('admin\/reportes\/export\/'",
+                    "timestamp": "2026-02-21T21:49:48+00:00"
+                },
+                {
+                    "test": "view_reportes_ref_4e14533f809f04f11a5183b31746cd43",
+                    "status": "PASS",
+                    "evidence": "Referencia encontrada: window.__reportesData",
+                    "timestamp": "2026-02-21T21:49:48+00:00"
+                }
+            ]
+        }
+    ]
+}
